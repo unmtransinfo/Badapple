@@ -1,4 +1,6 @@
-# badapple
+# Badapple
+
+![Alt](/images/BadappleWorm.png "Badapple")
 
 ### Badapple project code.
 
@@ -18,3 +20,6 @@ http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0137-3.
 * unm\_biocomp\_util.jar
 * bardplugin.jar
 * ChemAxon JChem (jchem.jar, etc.)
+
+Developed at the [UNM](http://www.unm.edu) Translational Informatics Division.
+
