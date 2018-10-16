@@ -1,0 +1,55 @@
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>JSME - Sketcher</title>
+  <script src="jsme/jsme/jsme.nocache.js"></script>
+
+<STYLE TYPE="text/css">
+html,button,td,p,select,input {
+  font-family: Arial,Helvetica,sans-serif; font-size: 12px; color: #000066;
+}
+html,body {
+  height: 100%;
+}
+</STYLE>
+<script>
+function jsmeOnLoad() {
+  jsmeApplet = new JSApplet.JSME("jsme_container", "100%", "90%",
+    { "options":"query,hydrogens" });
+  document.JSME = jsmeApplet; //for convenience
+}
+window.onresize = function() {
+  if (typeof jsmeApplet !==  'undefined') {
+    jsmeApplet.repaint();
+  }
+}
+
+function submitMol()
+{
+  var smi = document.JSME.smiles();
+  //var molfile = document.JSME.molFile();
+  if (smi == "") {
+    alert("Nothing to submit");
+  }
+  else {
+    window.opener.fromJSME(smi);
+    //window.close();
+  }
+}
+</script>
+</head>
+
+<body>
+  <table width="100%">
+    <tr>
+      <td align=\"center\">
+        <center>
+          <button type="button" onClick="submitMol()"> Submit Molecule </button>
+          <button type="button" onClick="window.close()"> Close </button>
+        </center>
+      </td>
+    </tr>
+  </table>
+  <div id="jsme_container" style="height:100%;"></div>
+</body>
+</html>

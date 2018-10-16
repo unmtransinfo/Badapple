@@ -1,0 +1,94 @@
+#############################################################################
+### Plots illustrating the behavior of the Badapple scoring function.
+###
+### score = 
+###	sActive / (sTested + median(sTested)) * 
+###	aActive / (aTested + median(aTested)) * 
+###	wActive / (wTested + median(wTested)) * 
+###	1e5 
+###
+###
+### min_sTotal | max_sTotal 
+### ------------+------------
+###   1 |      35884
+### 
+### min_sTested | med_sTested | max_sTested | min_sActive | med_sActive | max_sActive 
+### -------------+-------------+-------------+-------------+-------------+-------------
+###   0 |           2 |       32346 |           0 |           1 |       20074
+### 
+### min_aTested | med_aTested | max_aTested | min_aActive | med_aActive | max_aActive 
+### -------------+-------------+-------------+-------------+-------------+-------------
+###   0 |         453 |         528 |           0 |           3 |         508
+### 
+### min_wTested | med_wTested | max_wTested | min_wActive | med_wActive | max_wActive 
+### -------------+-------------+-------------+-------------+-------------+-------------
+###   0 |         517 |    11603660 |           0 |           3 |       93128
+### 
+#############################################################################
+### Jeremy Yang
+#############################################################################
+require(ggplot2, quietly = T)
+library(plotly, quietly = T)
+library(RColorBrewer, quietly = T)
+
+med_sT <- 2
+med_sA <- 1
+p80_sA <- 4
+med_aT <- 453
+med_aA <- 3
+p80_aA <- 12
+med_wT <- 517
+med_wA <- 3
+p80_wA <- 14
+##
+xy_max <- 400 #arbitrary
+###
+#score = aA / ( aT + med_aT) * p80_sA / (2 * med_sT) * p80_wA / (2 * med_wT) * 100000;
+#[score * (2 * med_sT) * (2 * med_wT) / p80_sA / p80_wA / 1e5] = aA / (aT + med_aT)
+# Let z = [score * (2 * med_sT) * (2 * med_wT) / p80_sA / p80_wA / 1e5]
+# z * (aT + med_aT) = aA
+# If aT = aA = xy
+# z * xy + z * med_aT = xy
+# xy * (1 - z) = z * med_aT
+# xy = med_aT * z / (1 - z)
+z_mod <- 100 * (2 * med_sT) * (2 * med_wT) / p80_sA / p80_wA / 1e5
+xy_mod_min <- med_aT * z_mod / (1 - z_mod)
+#
+z_high <- 300 * (2 * med_sT) * (2 * med_wT) / p80_sA / p80_wA / 1e5
+xy_high_min <- med_aT * z_high / (1 - z_high)
+##
+# if aT = xy_max
+# aA = z * (xy_max + med_aT)
+y_low_max <- z_mod * (xy_max + med_aT)
+##
+y_mod_max <- z_high * (xy_max + med_aT)
+##
+xLow = c(0, xy_mod_min, xy_max) 
+yLow = c(0, xy_mod_min, y_low_max)
+
+xMod = c(xy_mod_min, xy_high_min, xy_max)
+yMod = c(xy_mod_min, xy_high_min, y_mod_max)
+
+xHigh <- c(xy_high_min, xy_max)
+yHigh <- c(xy_high_min, xy_max)
+
+#HOW TO CUSTOM COLOR?  This does not work.
+#mycols <- c("#ff0000", "#00ffff", "#00ff00")
+#mycols <- RColorBrewer::brewer.pal(3, "Set2")
+#p <- plot_ly(colors = mycols) %>%
+
+p <- plot_ly() %>%
+  add_trace(name = "Low [0,100)", x = xLow, y = yLow, mode = "lines", fill = "tozeroy") %>%
+  add_trace(name = "Moderate [100,300)", x = xMod, y = yMod, mode = "lines", fill = "tonexty") %>%
+  add_trace(name = "High [300,inf)", x = xHigh, y = yHigh, mode = "lines", fill = "tonexty") %>%
+  layout(xaxis = list(title = "aTested", range = c(0,xy_max)), 
+         yaxis = list(title = "aActive", range = c(0,xy_max)),
+         title = "Badapple score dependence on assay active:tested ratio",
+         font = list(family = "monospace"),
+         legend = list(x = 0.1, y = 0.9),
+         annotations = list(text = "sActive, wActive = 80th percentiles<br>sTested, wTested = medians<br>median_aTested = 453", showarrow = F, x = 50, y = 250, xanchor = "left")
+         )
+#
+p
+###
+# 

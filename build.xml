@@ -1,0 +1,303 @@
+<?xml version="1.0" ?>
+<project name="all" basedir="." default="badapple">
+  <property environment="env" />
+  <property name="myname" value="Jeremy J Yang" />
+  <property name="org" value="UNM Translational Informatics Division" />
+  <description>
+	Libraries, applications, and webapps.
+	${myname}, ${org}
+	Note: "ant -Ddebug=true" enables "-Xlint:deprecation".
+  </description>
+  <tstamp>
+    <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss" />
+    <format property="date" pattern="yyyy-MM-dd" />
+    <format property="year" pattern="yyyy" />
+  </tstamp>
+  <condition property="isMac">   <equals arg1="${os.name}" arg2="Mac OS X"/> </condition>
+  <condition property="isLinux"> <equals arg1="${os.name}" arg2="Linux"/>    </condition>
+  <condition property="jtgt" value="-target 1.7" else="">
+    <equals arg1="${ant.java.version}" arg2="1.8"/>   
+  </condition>
+  <condition property="jsrc" value="-source 1.7" else="">
+    <equals arg1="${ant.java.version}" arg2="1.8"/>   
+  </condition>
+  <condition property="deprecation" value="-Xlint:deprecation" else="-Xlint:-deprecation">
+    <isset property="debug"/>
+  </condition>
+
+  <target name="configIfLinux" if="isLinux">
+    <!-- echo message="deprecation: ${deprecation}"/ -->
+    <condition property="appdir" value="${user.home}/app" else="/home/app">
+      <equals arg1="${env.HOSTNAME}" arg2="cheminfov.informatics.indiana.edu"/>
+    </condition>
+    <property name="javadir" location="/usr/share/java" />
+    <property name="datadir" location="/home/data" />
+    <presetdef name="jcompile">
+      <javac debug="true" includeantruntime="false" >
+        <compilerarg line="${jsrc}" />
+        <compilerarg line="${jtgt}" />
+        <compilerarg value="${deprecation}" />
+        <compilerarg value="-Xlint:-unchecked" />
+        <compilerarg value="-nowarn" />
+      </javac>
+    </presetdef>
+  </target>
+
+  <target name="configIfMac" if="isMac">
+    <!-- echo message="deprecation: ${deprecation}"/ -->
+    <property name="includeantruntime" value="false" /> <!-- Kludge for Mac -->
+    <property name="appdir" location="/Users/app" />
+    <property name="javadir" location="/usr/share/java" /> <!-- Fix this -->
+    <property name="datadir" location="/Users/data" />
+    <presetdef name="jcompile">
+      <javac debug="true" includeantruntime="false" >
+        <compilerarg line="${jsrc}" />
+        <compilerarg line="${jtgt}" />
+        <compilerarg value="${deprecation}" />
+        <compilerarg value="-Xlint:-unchecked" />
+        <compilerarg value="-nowarn" />
+      </javac>
+    </presetdef>
+  </target>
+
+  <target name="config" depends="configIfMac,configIfLinux"
+   description="Platform-specific configuration." >
+    <property name="d2rq_dir" value="${appdir}/d2rq" />
+    <echo message="OS: ${os.name} ${os.version} [${os.arch}]" />
+    <echo message="java version: ${ant.java.version} (${java.home})"/>
+    <echo message="hostname: ${env.HOSTNAME}" />
+    <echo message="home: ${user.home}" />
+    <echo message="appdir: ${appdir}"/>
+    <echo message="${jsrc} ${jtgt}"/>
+    <echo message="To list targets: ant -p"/>
+    <property name="libdir" location="${basedir}/lib" />
+
+    <!-- dependency jars -->
+    <property name="libj2ee" location="${appdir}/lib/servlet.jar" />
+    <property name="libcos" location="${appdir}/lib/cos.jar" />
+    <property name="libjna" location="${appdir}/lib/jna.jar" />
+    <property name="libjcommon" location="${appdir}/lib/jcommon-1.0.21.jar" />
+    <property name="libpgsql" location="${appdir}/lib/postgresql.jdbc3.jar" />
+    <property name="liboracle" location="${appdir}/lib/ojdbc5.jar" />
+    <property name="libmysql" location="${appdir}/lib/mysql-connector-java.jar" />
+    <property name="libberkeleydb" location="${appdir}/lib/berkeleydb-3.3.75.jar" />
+    <property name="libderby" location="${appdir}/lib/derby-10.10.1.1.jar" />
+    <property name="libcommons_cli" location="${javadir}/commons-cli.jar" />
+    <property name="libcommons_codec" location="${javadir}/commons-codec.jar" />
+    <property name="libcommons_math" location="${appdir}/lib/commons-math3-3.2.jar" />
+
+    <property name="libcdk" location="${appdir}/lib/cdk-1.5.13-SNAPSHOT.jar" />
+    <property name="libcdk_depict" location="${appdir}/lib/cdk-depict-1.5.13-SNAPSHOT.jar" />
+
+    <property name="jchemdir_preferred" location="${appdir}/chemaxon/jchemsuite" />
+    <property name="jchemdir_default" location="${appdir}/ChemAxon/JChemSuite" />
+    <available file="${jchemdir_preferred}" property="got_chemaxon_preferred"/>
+    <condition property="jchemdir" value="${jchemdir_preferred}" else="${jchemdir_default}">
+      <isset property="got_chemaxon_preferred"/>
+    </condition>
+    <echo message="DEBUG: jchemdir: ${jchemdir}" />
+    <property name="libjchem" location="${jchemdir}/lib/jchem.jar" />
+
+    <!-- homegrown libs -->
+    <property name="lib_unm_hscaf" location="${appdir}/lib/unm_biocomp_hscaf.jar" />
+    <property name="lib_unm_http" location="${appdir}/lib/unm_biocomp_http.jar" />
+    <property name="lib_unm_smarts" location="${appdir}/lib/unm_biocomp_smarts.jar" />
+    <property name="lib_unm_depict" location="${appdir}/lib/unm_biocomp_depict.jar" />
+    <property name="lib_unm_db" location="${appdir}/lib/unm_biocomp_db.jar" />
+    <property name="lib_unm_threads" location="${appdir}/lib/unm_biocomp_threads.jar" />
+    <property name="lib_unm_rest" location="${appdir}/lib/unm_biocomp_rest.jar" />
+    <property name="lib_unm_text" location="${appdir}/lib/unm_biocomp_text.jar" />
+    <property name="lib_unm_util" location="${appdir}/lib/unm_biocomp_util.jar" />
+
+    <property name="libbardapi_plugin" location="${appdir}/lib/bardplugin.jar" />
+
+    <!-- target jars -->
+    <property name="badapple" location="${libdir}/unm_biocomp_badapple.jar" />
+    <property name="badapple_derbydb" location="${libdir}/badapple_derbydb.jar" />
+  
+    <!-- target wars -->
+    <property name="badapple_war" location="${libdir}/badapple.war" />
+    <property name="badapple_derby_war" location="${libdir}/badapple_with_embedded_db.war" />
+ 
+  </target>
+
+  <target name="badapple" depends="config,badapple_clean"
+    description="Badapple JAR; includes servlet">
+    <jcompile srcdir="${basedir}/edu/unm/health/biocomp/badapple" includes="*.java,**/*.java">
+      <classpath>
+        <pathelement path="${basedir}/edu/unm/health/biocomp/badapple" />
+        <pathelement location="${lib_unm_hscaf}" />
+        <pathelement location="${lib_unm_db}" />
+        <pathelement location="${lib_unm_util}" />
+        <pathelement location="${lib_unm_http}" />
+        <pathelement location="${libbardapi_plugin}" />
+        <fileset dir="${jchemdir}/lib/"><include name="jchem*.jar" /></fileset>
+        <fileset dir="${jchemdir}/lib/"><include name="MarvinBeans*.jar" /></fileset>
+        <fileset dir="${jchemdir}/lib/"><include name="com.chemaxon-*.jar" /></fileset>
+        <pathelement location="${libcos}" />
+        <pathelement location="${libderby}" />
+        <pathelement location="${libpgsql}" />
+        <pathelement location="${libberkeleydb}" />
+        <pathelement location="${libj2ee}" />
+      </classpath>
+    </jcompile>
+    <jar destfile="${badapple}" >
+      <fileset dir="${basedir}" includes="edu/unm/health/biocomp/badapple/*.class" />
+      <fileset dir="${basedir}" includes="edu/unm/health/biocomp/badapple/**/*.class" />
+      <manifest>
+        <attribute name="Author" value="${myname}" />
+        <attribute name="Builder" value="${user.name}" />
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="badapple_clean">
+    <delete><fileset dir="${basedir}/edu/unm/health/biocomp/badapple" includes="**/*.class"/></delete>
+  </target>
+
+  <target name="badapple_war" depends="config,badapple"
+	description="Badapple WAR (with dependencies, no embedded db)">
+    <war destfile="${badapple_war}" webxml="edu/unm/health/biocomp/badapple/web.xml">
+      <zipfileset src="${libdir}/unm_biocomp_badapple.jar" includes="**/*.class" prefix="WEB-INF/classes" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_hscaf.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_smarts.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_depict.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_http.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_threads.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_cdk.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_db.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_util.jar" />
+      <classes dir="${basedir}/properties" includes="*.properties" />
+      <zipfileset dir="/home/www/htdocs/jsme" prefix="jsme" />
+      <fileset dir="${basedir}/html" includes="jsme_win.html" />
+      <zipfileset dir="${basedir}/js" includes="*.js" prefix="js" />
+      <zipfileset dir="${basedir}/css" includes="*.css" prefix="css" />
+      <zipfileset dir="${basedir}/images" prefix="images" />
+      <!-- fileset dir="${basedir}/edu/unm/health/biocomp/badapple" includes="index.html" / -->
+      <lib dir="${jchemdir}/lib" includes="jchem*.jar" />
+      <lib dir="${jchemdir}/lib" includes="MarvinBeans*.jar" />
+      <lib dir="${jchemdir}/lib" includes="com.chemaxon-*.jar" /> <!-- New, post-5.8.3, pre-6.3.1. -->
+      <lib dir="${jchemdir}/lib" includes="freehep-*.jar" />
+      <lib dir="${jchemdir}/lib" includes="commons-*.jar" />
+      <lib dir="${jchemdir}/lib" includes="guava-*.jar" />
+      <lib dir="${jchemdir}/lib" includes="automaton-*.jar" />
+      <lib dir="${appdir}/lib" includes="cdk-1.5.13-SNAPSHOT.jar" />
+      <lib dir="${appdir}/lib" includes="cdk-depict-1.5.13-SNAPSHOT.jar" />
+      <lib dir="${appdir}/lib" includes="cos.jar" />
+      <lib dir="${appdir}/lib" includes="derby-10.10.1.1.jar,berkeleydb-3.3.75.jar,postgresql-9.1-903.jdbc3.jar,mysql-connector-java-5.1.6.jar" />
+      <manifest>
+        <attribute name="Author" value="${myname}" />
+        <attribute name="Organization" value="${org}" />
+        <attribute name="Builder" value="${user.name}" />
+        <attribute name="Date" value="${timestamp}" />
+      </manifest>
+    </war>
+    <echo message="Badapple WAR, includes local dependencies, no embedded db." />
+    <echo message="File: ${badapple_war}" />
+    <echo message="Author: ${myname}" />
+    <echo message="Organization: ${org}" />
+    <echo message="Builder: ${user.name}" />
+    <echo message="Date: ${timestamp}" />
+  </target>
+
+  <target name="badapple_derby_war" depends="config,badapple"
+	description="Badapple WAR (with dependencies including embedded Derby db)">
+    <war destfile="${badapple_derby_war}" webxml="edu/unm/health/biocomp/badapple/web.xml">
+      <zipfileset src="${libdir}/unm_biocomp_badapple.jar" includes="**/*.class" prefix="WEB-INF/classes" />
+
+      <lib dir="${appdir}/lib" includes="unm_biocomp_hscaf.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_smarts.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_util.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_http.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_db.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_threads.jar" />
+      <lib dir="${appdir}/lib" includes="unm_biocomp_depict.jar" />
+
+      <lib dir="${jchemdir}/lib" includes="jchem*.jar" />
+      <lib dir="${jchemdir}/lib" includes="MarvinBeans*.jar" />
+      <lib dir="${jchemdir}/lib" includes="com.chemaxon-*.jar" /> <!-- New, post-5.8.3, pre-6.3.1. -->
+      <lib dir="${jchemdir}/lib" includes="freehep-*.jar" />
+      <lib dir="${appdir}/lib" includes="guava-16.0.1.jar" />
+      <lib dir="${appdir}/lib" includes="commons-logging-1.1.1.jar" />
+      <lib dir="${appdir}/lib" includes="cos.jar" />
+      <lib dir="${appdir}/lib" includes="derby-10.10.1.1.jar,berkeleydb-3.3.75.jar,postgresql-9.1-903.jdbc3.jar,mysql-connector-java-5.1.6.jar" />
+      <classes dir="edu/unm/health/biocomp/webapps/properties" includes="*.properties" />
+      <zipfileset dir="${basedir}/js" includes="biocomp.js" prefix="js" />
+      <zipfileset dir="${appdir}/lib" includes="ddtip.js" prefix="js" />
+      <zipfileset dir="${appdir}/lib" includes="jquery-1.9.1.js,jquery-ui.js" prefix="js" />
+      <zipfileset dir="${basedir}/css" includes="biocomp.css" prefix="css" />
+      <zipfileset dir="${appdir}/lib" includes="jquery-ui.css" prefix="css" />
+      <zipfileset dir="${datadir}/derby/badapple" prefix="derby/badapple">
+        <exclude name="**/*.lck"/>
+        <exclude name="log/*.dat"/>
+      </zipfileset>
+      <fileset dir="${basedir}/edu/unm/health/biocomp/badapple" includes="index.html" />
+      <zipfileset dir="${basedir}/images" prefix="images" />
+      <manifest>
+        <attribute name="Author" value="${myname}" />
+        <attribute name="Organization" value="${org}" />
+        <attribute name="Builder" value="${user.name}" />
+        <attribute name="Date" value="${timestamp}" />
+      </manifest>
+    </war>
+    <echo message="Badapple WAR, includes local dependencies, embedded Derby db." />
+    <echo message="File: ${badapple_derby_war}" />
+    <echo message="Author: ${myname}" />
+    <echo message="Organization: ${org}" />
+    <echo message="Builder: ${user.name}" />
+    <echo message="Date: ${timestamp}" />
+  </target>
+
+  <target name="badapple_derbydb" depends="config" description="Badapple Derby DB JAR">
+    <jar destfile="${badapple_derbydb}" >
+      <zipfileset dir="${datadir}/derby/badapple" prefix="derby/badapple">
+        <exclude name="**/*.lck"/>
+        <exclude name="log/*.dat"/>
+      </zipfileset>
+      <manifest>
+        <attribute name="Author" value="${myname}" />
+        <attribute name="Builder" value="${user.name}" />
+      </manifest>
+    </jar>
+    <echo message="Badapple Derby DB JAR." />
+    <echo message="File: ${badapple_derbydb}" />
+  </target>
+
+  <!-- Javadoc: -->
+
+  <target name="badapple_doc" depends="config" description="Javadoc">
+    <jdoc windowtitle="badapple API" destdir="${docdir}/badapple"> 
+      <doctitle><![CDATA[<H1>badapple API</H1>]]></doctitle>
+      <fileset dir="${srcdir}" includes="edu/unm/health/biocomp/badapple/*.java,edu/unm/health/biocomp/badapple/**/*.java" />
+      <classpath>
+        <pathelement location="${lib_unm_hscaf}" />
+        <pathelement location="${lib_unm_http}" />
+        <pathelement location="${lib_unm_db}" />
+        <pathelement location="${lib_unm_util}" />
+        <pathelement location="${libpgsql}" />
+        <pathelement location="${libmysql}" />
+        <pathelement location="${libberkeleydb}" />
+        <pathelement location="${libderby}" />
+        <pathelement location="${libj2ee}" />
+      </classpath>
+    </jdoc>
+  </target>
+
+  <target name="clean_doc" depends="config">
+    <delete dir="${docdir}" />
+  </target>
+
+  <!-- Misc/util targets: -->
+
+  <target name="clean" depends="clean_doc"
+    description="Clean all compiled classes, JARs, WARs, and autogenerated javadocs." >
+    <delete>
+      <fileset dir="${basedir}" includes="**/*.class"/>
+      <fileset dir="${basedir}" includes="**/*.jar"/>
+      <fileset dir="${basedir}" includes="**/*.war"/>
+      <fileset dir="${basedir}" includes="failures"/>
+    </delete>
+  </target>
+
+</project>
+

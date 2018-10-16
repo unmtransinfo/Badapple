@@ -1,0 +1,86 @@
+<HTML>
+<BODY>
+For BADAPPLE promiscuity analysis.
+Utilizes HScaf package, accesses database containing compound and scaffold assay statistics to generate
+promiscuity scores.
+<P>
+BADAPPLE =
+<U>B</U>io-
+<U>A</U>ctivity
+<U>D</U>ata
+<U>A</U>ssociative
+<U>P</U>romiscuity
+<U>P</U>attern
+<U>L</U>earning
+<U>E</U>ngine
+
+<H3>Functionality</H3>
+<UL>
+<LI> Utilizes HScaf (edu.unm.health.biocomp.hscaf) package.
+<LI> Accesses database containing compound and scaffold assay statistics.
+<LI> Database server may be PostgreSQL or MySql.
+<LI> Generates promiscuity scores for scaffolds and compounds.
+</UL>
+
+<H3>badapple application command line help</H3>
+<PRE>
+badapple - bioactivity database associative promiscuity pattern learning engine
+
+From the UNM Translational Informatics Division
+
+usage: badapple [options]
+  required:
+    -i IFILE .................. input molecules
+    or
+    -out_scaf OSCAFS .......... output all scaffolds w/ scores and stats
+    or
+    -annotate_scaf ............ annotate all scaffolds w/ scores (write to db)
+    or
+    -describedb ............... test connection; describe database
+    or
+    -describescaf SCAFID ...... describe scaf: mols, stats
+  options:
+    -o OFILE .................. output molecules, w/ scores
+    -dbtype DBTYPE ............ database type (postgres|mysql) [postgres]
+    -dbhost DBHOST ............ database host [localhost]
+    -dbport DBPORT ............ database port [5432]
+    -dbname DBNAME ............ database name [openchord]
+    -dbschema DBSCHEMA ........ database schema [badapple]
+    -dbusr DBUSR .............. database user
+    -dbpw DBPW ................ database password
+    -maxatoms MAX ............. max atom count of input mol [100]
+    -maxrings MAX ............. max ring count of input mol [10]
+    -nmax NMAX ................ quit after NMAX molecules
+    -nskip NSKIP .............. skip NSKIP molecules
+    -v ........................ verbose
+    -vv ....................... very verbose
+    -vvv or -debug ............ very very verbose (slows process)
+    -h ........................ this help
+</PRE>
+
+<H3>Known bugs, issues</H3>
+<UL>
+<LI> Scaffold analysis must be consistent at client and in database.  If client dissects
+input query molecule into scaffolds, these must match exactly the scaffolds stored in the database.
+If scaffold analysis implementations comply strictly with the HScaf algorithm, different
+toolkits and/or versions can be used.
+An alternate approach is to rely on a database function for scaffold analysis.  A prior
+implementation used ChemAxon SMARTS to store scaffolds as queries in a JChem-cartridge Oracle database.
+<LI> Apart from the scaffold analysis is the efficient and rigorous indexing of scaffolds via 
+canonical smiles.  As with compound databases, it cannot be assumed that two 
+implementations (toolkit or version) result in the same canonical smiles.
+However, the client toolkit normally does not need to canonicalize a query, which
+can be done via database cartridge function (e.g. in OpenChord, openbabel.cansmiles()).
+</UL>
+
+<H3>References</H3>
+<OL>
+<LI> See demo web app at <A HREF="http://pasilla.health.unm.edu">UNM Translational Informatics
+Division Public Web Apps</A>.
+<LI> <A HREF="http://code.google.com/p/unm-biocomp-hscaf/">Gcode project UNM-Biocomp-HScaf</A>
+<LI> HierS: Hierarchical Scaffold Clustering, Wilkens et al., J. Med. Chem. 2005, 48, 3182-3193.
+</OL>
+
+@author	Jeremy J Yang
+</BODY>
+</HTML>
