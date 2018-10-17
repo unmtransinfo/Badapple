@@ -1,10 +1,10 @@
 # Badapple
 
-![Alt](/images/BadappleWorm.png "Badapple")
+<img src="/images/BadappleWorm.png" height="80">
 
 ### Badapple project code.
 
-* http://pasilla.health.unm.edu/badapple
+* <a target="_blank" href="http://pasilla.health.unm.edu/badapple">Public web app</a>
 
 Ref: Badapple: promiscuity patterns from noisy evidence , Yang JJ, Ursu O, Lipinski
 CA, Sklar LA, Oprea TI Bologa CG, J. Cheminfo. 8:29 (2016), DOI:
