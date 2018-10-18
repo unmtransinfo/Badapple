@@ -78,7 +78,6 @@
     <property name="libjna" location="${appdir}/lib/jna.jar" />
     <property name="libjcommon" location="${appdir}/lib/jcommon-1.0.21.jar" />
     <property name="libpgsql" location="${appdir}/lib/postgresql.jdbc3.jar" />
-    <property name="liboracle" location="${appdir}/lib/ojdbc5.jar" />
     <property name="libmysql" location="${appdir}/lib/mysql-connector-java.jar" />
     <property name="libberkeleydb" location="${appdir}/lib/berkeleydb-3.3.75.jar" />
     <property name="libderby" location="${appdir}/lib/derby-10.10.1.1.jar" />
@@ -201,10 +200,9 @@
   </target>
 
   <target name="badapple_derby_war" depends="config,badapple"
-	description="Badapple WAR (with dependencies including embedded Derby db)">
+	description="Badapple WAR (with embedded Derby db) [DEPRECATED]">
     <war destfile="${badapple_derby_war}" webxml="edu/unm/health/biocomp/badapple/web.xml">
       <zipfileset src="${libdir}/unm_biocomp_badapple.jar" includes="**/*.class" prefix="WEB-INF/classes" />
-
       <lib dir="${appdir}/lib" includes="unm_biocomp_hscaf.jar" />
       <lib dir="${appdir}/lib" includes="unm_biocomp_smarts.jar" />
       <lib dir="${appdir}/lib" includes="unm_biocomp_util.jar" />
@@ -212,7 +210,6 @@
       <lib dir="${appdir}/lib" includes="unm_biocomp_db.jar" />
       <lib dir="${appdir}/lib" includes="unm_biocomp_threads.jar" />
       <lib dir="${appdir}/lib" includes="unm_biocomp_depict.jar" />
-
       <lib dir="${jchemdir}/lib" includes="jchem*.jar" />
       <lib dir="${jchemdir}/lib" includes="MarvinBeans*.jar" />
       <lib dir="${jchemdir}/lib" includes="com.chemaxon-*.jar" /> <!-- New, post-5.8.3, pre-6.3.1. -->
@@ -248,7 +245,7 @@
     <echo message="Date: ${timestamp}" />
   </target>
 
-  <target name="badapple_derbydb" depends="config" description="Badapple Derby DB JAR">
+  <target name="badapple_derbydb" depends="config" description="Badapple Derby DB JAR [DEPRECATED]">
     <jar destfile="${badapple_derbydb}" >
       <zipfileset dir="${datadir}/derby/badapple" prefix="derby/badapple">
         <exclude name="**/*.lck"/>
