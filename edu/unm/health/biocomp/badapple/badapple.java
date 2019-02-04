@@ -154,6 +154,8 @@ public class badapple
       String ofmt=MFileFormatUtil.getMostLikelyMolFormat(ofile);
       if (ofmt.equals("smiles")) ofmt="smiles:+n-a"; //Kekule for compatibility
       molWriter=new MolExporter(new FileOutputStream(ofile),ofmt);
+    } else {
+      molWriter=new MolExporter(System.out,"sdf");
     }
 
     String dbname_full=(dbtype.equals("derby")?(dbdir+"/"+dbname):dbname);

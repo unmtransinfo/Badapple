@@ -199,8 +199,7 @@
     <echo message="Date: ${timestamp}" />
   </target>
 
-  <target name="badapple_derby_war" depends="config,badapple"
-	description="Badapple WAR (with embedded Derby db) [DEPRECATED]">
+  <target name="badapple_derby_war" depends="config,badapple"> <!-- [DEPRECATED] -->
     <war destfile="${badapple_derby_war}" webxml="edu/unm/health/biocomp/badapple/web.xml">
       <zipfileset src="${libdir}/unm_biocomp_badapple.jar" includes="**/*.class" prefix="WEB-INF/classes" />
       <lib dir="${appdir}/lib" includes="unm_biocomp_hscaf.jar" />
@@ -245,7 +244,7 @@
     <echo message="Date: ${timestamp}" />
   </target>
 
-  <target name="badapple_derbydb" depends="config" description="Badapple Derby DB JAR [DEPRECATED]">
+  <target name="badapple_derbydb" depends="config"> <!-- [DEPRECATED] -->
     <jar destfile="${badapple_derbydb}" >
       <zipfileset dir="${datadir}/derby/badapple" prefix="derby/badapple">
         <exclude name="**/*.lck"/>
