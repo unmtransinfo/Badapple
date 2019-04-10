@@ -156,7 +156,7 @@
 
   <target name="badapple_war" depends="config,badapple"
 	description="Badapple WAR (with dependencies, no embedded db)">
-    <war destfile="${badapple_war}" webxml="edu/unm/health/biocomp/badapple/web.xml">
+    <war destfile="${badapple_war}" webxml="${basedir}/config/web.xml">
       <zipfileset src="${libdir}/unm_biocomp_badapple.jar" includes="**/*.class" prefix="WEB-INF/classes" />
       <lib dir="${appdir}/lib" includes="unm_biocomp_hscaf.jar" />
       <lib dir="${appdir}/lib" includes="unm_biocomp_smarts.jar" />
@@ -172,13 +172,12 @@
       <zipfileset dir="${basedir}/js" includes="*.js" prefix="js" />
       <zipfileset dir="${basedir}/css" includes="*.css" prefix="css" />
       <zipfileset dir="${basedir}/images" prefix="images" />
-      <!-- fileset dir="${basedir}/edu/unm/health/biocomp/badapple" includes="index.html" / -->
       <lib dir="${jchemdir}/lib" includes="jchem*.jar" />
       <lib dir="${jchemdir}/lib" includes="MarvinBeans*.jar" />
-      <lib dir="${jchemdir}/lib" includes="com.chemaxon-*.jar" /> <!-- New, post-5.8.3, pre-6.3.1. -->
+      <lib dir="${jchemdir}/lib" includes="com.chemaxon-*.jar" />
       <lib dir="${jchemdir}/lib" includes="freehep-*.jar" />
-      <lib dir="${jchemdir}/lib" includes="commons-*.jar" />
       <lib dir="${jchemdir}/lib" includes="guava-*.jar" />
+      <lib dir="${jchemdir}/lib" includes="commons-*.jar" />
       <lib dir="${jchemdir}/lib" includes="automaton-*.jar" />
       <lib dir="${appdir}/lib" includes="cdk-1.5.13-SNAPSHOT.jar" />
       <lib dir="${appdir}/lib" includes="cdk-depict-1.5.13-SNAPSHOT.jar" />
@@ -200,7 +199,7 @@
   </target>
 
   <target name="badapple_derby_war" depends="config,badapple"> <!-- [DEPRECATED] -->
-    <war destfile="${badapple_derby_war}" webxml="edu/unm/health/biocomp/badapple/web.xml">
+    <war destfile="${badapple_derby_war}" webxml="${basedir}/config/web.xml">
       <zipfileset src="${libdir}/unm_biocomp_badapple.jar" includes="**/*.class" prefix="WEB-INF/classes" />
       <lib dir="${appdir}/lib" includes="unm_biocomp_hscaf.jar" />
       <lib dir="${appdir}/lib" includes="unm_biocomp_smarts.jar" />
