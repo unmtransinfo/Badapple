@@ -1,79 +1,66 @@
 ---
-title: "Badapple score dependence on volume of evidence"
+title: "Badapple formula illustration"
 author: "Jeremy Yang"
 output: 
   flexdashboard::flex_dashboard:
-    vertical_layout: fill
+    vertical_layout: scroll
 ---
 
-Column {data-width=300}
--------------------------------------
-
-# Formula
-
- Plots illustrating the behavior of the Badapple scoring function.
-
- score = 
-	sActive / (sTested + median(sTested)) * 
-	aActive / (aTested + median(aTested)) * 
-	wActive / (wTested + median(wTested)) * 
-	1e5 
-
 ```{r}
-params <- list()
-params[['min_sTotal']] <- 1
-params[['max_sTotal']] <- 35884
-params[['min_sTested']] <- 0
-params[['med_sTested']] <- 2
-params[['max_sTested ']] <- 32346 
-params[['min_sActive ']] <- 0 
-params[['med_sActive ']] <- 1 
-params[['max_sActive ']] <- 20074
-params[['min_aTested ']] <- 0 
-params[['med_aTested ']] <- 453 
-params[['max_aTested ']] <- 528 
-params[['min_aActive ']] <- 0 
-params[['med_aActive ']] <- 3 
-params[['max_aActive ']] <- 508
-params[['min_wTested ']] <- 0 
-params[['med_wTested ']] <- 517 
-params[['max_wTested ']] <- 11603660 
-params[['min_wActive ']] <- 0 
-params[['med_wActive ']] <- 3 
-params[['max_wActive ']] <- 93128
-as.data.frame(params)
+library(plotly)
+knitr::opts_chunk$set(fig.height=5)
 ```
 
+Column {data-height=480}
+-------------------------------------
 
-Column {data-width=400}
--------------------------------------   
+Illustrating the behavior of the Badapple scoring function.
 
-# Plot
+`score` = 
+	`sActive` / (`sTested` + median(`sTested`)) * 
+	`aActive` / (`aTested` + median(`aTested`)) * 
+	`wActive` / (`wTested` + median(`wTested`)) * 
+	1e5 
+
+Where
+
+* `sTested` (substances tested) = # tested substances containing this scaffold
+* `sActive` (substances active) = # active substances containing this scaffold
+* `aTested` (assays tested) = # assays with tested compounds containing this scaffold
+* `aActive` (assays active) = # assays with active compounds containing this scaffold
+* `wTested` (samples tested) = # samples (wells) containing this scaffold
+* `wActive` (samples active) = # active samples (wells) containing this scaffold
+
+Normalizing aggregate statistic parameters from PubChem assays ("Badapple: promiscuity patterns from noisy evidence", Yang JJ, Ursu O, Lipinski CA, Sklar LA, Oprea TI Bologa CG, J. Cheminfo. 8:29 (2016), DOI: 10.1186/s13321-016-0137-3).
+
+```{r}
+params <- c(
+	min_sTotal = 1L, max_sTotal = 35884L, min_sTested = 0L, med_sTested = 2L, max_sTested = 32346L , min_sActive = 0L, med_sActive = 1L, max_sActive = 20074L,
+	min_aTested = 0L, med_aTested = 453L, max_aTested = 528L, min_aActive = 0L, med_aActive = 3L, max_aActive = 508L,
+	min_wTested = 0L, med_wTested = 517L, max_wTested = 11603660L, min_wActive = 0L, med_wActive = 3L, max_wActive = 93128L)
+sprintf("%s: %d", names(params), as.integer(params))
+```
+
+Column
+-------------------------------------
 
 ```{r message=FALSE}
-library(plotly)
 
-med_sT <- 2
-med_sA <- 1
-p80_sA <- 4
-med_aT <- 453
-med_aA <- 3
-p80_aA <- 12
-med_wT <- 517
-med_wA <- 3
-p80_wA <- 14
+p80_sActive <- 4
+p80_aActive <- 12
+p80_wActive <- 14
 
 xy_max <- 400 #arbitrary
 
-z_mod <- 100 * (2 * med_sT) * (2 * med_wT) / p80_sA / p80_wA / 1e5
-xy_mod_min <- med_aT * z_mod / (1 - z_mod)
+z_mod <- 100 * (2 * params['med_sTested']) * (2 * params['med_wTested']) / p80_sActive / p80_wActive / 1e5
+xy_mod_min <- params['med_aTested'] * z_mod / (1 - z_mod)
 
-z_high <- 300 * (2 * med_sT) * (2 * med_wT) / p80_sA / p80_wA / 1e5
-xy_high_min <- med_aT * z_high / (1 - z_high)
+z_high <- 300 * (2 * params['med_sTested']) * (2 * params['med_wTested']) / p80_sActive / p80_wActive / 1e5
+xy_high_min <- params['med_aTested'] * z_high / (1 - z_high)
 
-y_low_max <- z_mod * (xy_max + med_aT)
+y_low_max <- z_mod * (xy_max + params['med_aTested'])
 
-y_mod_max <- z_high * (xy_max + med_aT)
+y_mod_max <- z_high * (xy_max + params['med_aTested'])
 
 xLow = c(0, xy_mod_min, xy_max) 
 yLow = c(0, xy_mod_min, y_low_max)
@@ -83,22 +70,19 @@ yMod = c(xy_mod_min, xy_high_min, y_mod_max)
 
 xHigh <- c(xy_high_min, xy_max)
 yHigh <- c(xy_high_min, xy_max)
-```
 
-## Plot
-
-```{r}
 p <- plot_ly() %>%
-  add_trace(type="scatter", name="Low [0,100)", x=xLow, y=yLow, mode="lines", fill="tozeroy", fillcolor="green", line=list(color="green")) %>%
-  add_trace(type="scatter", name="Moderate [100,300)", x=xMod, y=yMod, mode="lines", fill="tonexty", fillcolor="yellow", line=list(color="yellow")) %>%
-  add_trace(type="scatter", name="High [300,inf)", x=xHigh, y=yHigh, mode="lines", fill="tonexty", fillcolor="red", line=list(color="red")) %>%
-  layout(xaxis = list(title = "aTested", range = c(0,xy_max)), 
-         yaxis = list(title = "aActive", range = c(0,xy_max)),
-         title = "Badapple score<br>dependence on assay active:tested ratio",
-         font = list(family="monospace", size=20),
-         legend = list(x=0.1, y=1),
-         margin=list(t=120),
-         annotations = list(text = "sActive, wActive = 80th percentiles<br>sTested, wTested = medians<br>median_aTested = 453", showarrow=F, x=50, y=250, xanchor="left", font=list(size=12))
-         )
+	add_trace(type="scatter", name="Low [0,100)", x=xLow, y=yLow, mode="lines", fill="tozeroy", fillcolor="green", line=list(color="green")) %>%
+	add_trace(type="scatter", name="Moderate [100,300)", x=xMod, y=yMod, mode="lines", fill="tonexty", fillcolor="yellow", line=list(color="yellow")) %>%
+	add_trace(type="scatter", name="High [300,inf)", x=xHigh, y=yHigh, mode="lines", fill="tonexty", fillcolor="red", line=list(color="red")) %>%
+	layout(xaxis=list(title="assaysTested", range=c(0, xy_max)), 
+		yaxis=list(title="assaysActive", range=c(0, xy_max)),
+		title="Badapple scoring levels<br>vs. assay active:tested ratio",
+		font=list(family="monospace", size=20),
+		legend=list(x=0.1, y=1),
+		margin=list(t=120),
+		autosize=T,
+		annotations=list(text=sprintf("sActive, wActive = 80th percentiles<br>sTested, wTested = medians<br>median_aTested = %d", params['med_aTested']),
+		showarrow=F, x=50, y=250, xanchor="left", font=list(size=12)))
 p
 ``` 
