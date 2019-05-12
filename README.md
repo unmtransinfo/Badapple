@@ -1,8 +1,8 @@
 # Badapple
 
-<img src="/images/BadappleWorm.png" height="80">
+<img src="/src/main/webapp/images/BadappleWorm.png" height="80">
 
-### Badapple project code.
+Badapple project code.
 
 * <a target="_blank" href="http://pasilla.health.unm.edu/badapple">Public web app</a>
 
@@ -13,13 +13,13 @@ http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0137-3.
 
 ### Dependencies:
 
-* unm\_biocomp\_hscaf.jar
-* unm\_biocomp\_db.jar
-* unm\_biocomp\_depict.jar
-* unm\_biocomp\_http.jar
-* unm\_biocomp\_util.jar
-* bardplugin.jar
-* ChemAxon JChem (jchem.jar, etc.)
+* `unm_biocomp_hscaf.jar`
+* `unm_biocomp_db.jar`
+* `unm_biocomp_depict.jar`
+* `unm_biocomp_http.jar`
+* `unm_biocomp_util.jar`
+* `bardplugin.jar`
+* ChemAxon JChem
 
 Developed at the [UNM](http://www.unm.edu) Translational Informatics Division.
 
