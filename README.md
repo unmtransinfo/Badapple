@@ -1,6 +1,4 @@
-# Badapple
-
-<img src="/src/main/webapp/images/BadappleWorm.png" height="80">
+# Badapple <img align="right" src="/src/main/webapp/images/BadappleWorm.png" height="80">
 
 ## Badapple project code.
 
@@ -8,12 +6,8 @@
 
 ## Dependencies:
 
-* `unm_biocomp_hscaf.jar`
-* `unm_biocomp_db.jar`
-* `unm_biocomp_depict.jar`
-* `unm_biocomp_http.jar`
-* `unm_biocomp_util.jar`
-* `bardplugin.jar`
+* `unm_biocomp_hscaf.jar`, `unm_biocomp_db.jar`, `unm_biocomp_depict.jar`, `unm_biocomp_http.jar`,
+`unm_biocomp_util.jar`, `bardplugin.jar`
 * ChemAxon JChem
 
 ## Building the JAR and WAR/webapp:
