@@ -20,8 +20,8 @@ import chemaxon.license.*; // LicenseManager
 
 import edu.unm.health.biocomp.badapple.*;
 import edu.unm.health.biocomp.db.*;
-import edu.unm.health.biocomp.http.*;
 import edu.unm.health.biocomp.util.*;
+import edu.unm.health.biocomp.util.http.*;
 
 
 /**	Badapple = Bioactivity data associative promiscuity pattern learning engine
