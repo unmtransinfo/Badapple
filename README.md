@@ -1,5 +1,8 @@
 # Badapple <img align="right" src="/src/main/webapp/images/BadappleWorm.png" height="80">
 
+Bioassay data associative promiscuity pattern learning engine. 
+Methods developed at UNM for for HTS analytics and hit prioritization.
+
 ## Badapple project code.
 
 * <a target="_blank" href="http://pasilla.health.unm.edu/badapple">Public web app</a>
@@ -13,8 +16,7 @@
 ## Building the JAR and WAR/webapp:
 
 ```
-mvn clean
-mvn package
+mvn clean package
 ```
 
 Developed at the [UNM](http://www.unm.edu) Translational Informatics Division.
