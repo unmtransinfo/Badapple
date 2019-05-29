@@ -112,7 +112,8 @@
         </configuration>
       </plugin>
 
-      <plugin>
+      <!-- WHY DOES THIS MESS UP THE JAR? (PUTS CLASSES UNDER WEB-INF/classes) -->
+      <!-- plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>3.2.2</version>
@@ -142,7 +143,7 @@
             </resource>
           </webResources>
         </configuration>
-      </plugin>
+      </plugin -->
     </plugins>
 
   </build>
