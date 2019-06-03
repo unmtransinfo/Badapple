@@ -4,6 +4,7 @@ author: "Jeremy Yang"
 output: 
   flexdashboard::flex_dashboard:
     vertical_layout: scroll
+fontfamily: palatino
 ---
 
 ```{r}

@@ -32,4 +32,6 @@ Developed at the [UNM Translational Informatics Division](http://datascience.unm
 * Badapple: promiscuity patterns from noisy evidence , Yang JJ, Ursu O, Lipinski
 CA, Sklar LA, Oprea TI Bologa CG, J. Cheminfo. 8:29 (2016), DOI: 10.1186/s13321-016-0137-3,
 <http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0137-3>.
+* See [Badapple Formula](/doc/badapple_formula.html)
 
+<img align="center" src="/doc/images/badapple_formula.png">
