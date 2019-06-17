@@ -9,7 +9,7 @@ import chemaxon.struc.*;
 import chemaxon.formats.*;
 import chemaxon.marvin.io.MolExportException;
 
-import edu.unm.health.biocomp.db.*;
+import edu.unm.health.biocomp.util.db.*;
 import edu.unm.health.biocomp.hscaf.*;
 import edu.unm.health.biocomp.util.*;
 
@@ -36,11 +36,6 @@ import edu.unm.health.biocomp.util.*;
 	</ul>
 	<br>
 	@author Jeremy J Yang
-	@see edu.unm.health.biocomp.hscaf.hscaf_utils
-	@see edu.unm.health.biocomp.db.pg_utils
-	@see edu.unm.health.biocomp.db.mysql_utils
-	@see edu.unm.health.biocomp.db.derby_utils
-	@see edu.unm.health.biocomp.db.DBCon
 */
 public class badapple_utils
 {

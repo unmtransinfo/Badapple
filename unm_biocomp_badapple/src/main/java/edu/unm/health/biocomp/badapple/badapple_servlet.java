@@ -19,7 +19,7 @@ import chemaxon.struc.*;
 import chemaxon.license.*; // LicenseManager
 
 import edu.unm.health.biocomp.badapple.*;
-import edu.unm.health.biocomp.db.*;
+import edu.unm.health.biocomp.util.db.*;
 import edu.unm.health.biocomp.util.*;
 import edu.unm.health.biocomp.util.http.*;
 

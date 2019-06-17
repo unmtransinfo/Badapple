@@ -9,7 +9,7 @@ import chemaxon.struc.*;
 import chemaxon.formats.*;
 import chemaxon.marvin.io.*;
 
-import edu.unm.health.biocomp.db.*; // DBCon, pg_utils, mysql_utils, derby_utils
+import edu.unm.health.biocomp.util.db.*; // DBCon, pg_utils, mysql_utils, derby_utils
 import edu.unm.health.biocomp.hscaf.*;
 import edu.unm.health.biocomp.util.time_utils;
 
