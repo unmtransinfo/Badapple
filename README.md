@@ -20,7 +20,22 @@ Badapple web app, utility apps, library, and project code.
 mvn clean install
 ```
 
-## Usage
+## Deploying webapp `BADAPPLE_WAR`
+
+Ok for Tomcat v8/v9 also. Deploy to server `TomcatServer` as specified
+in Maven `settings.xml`.
+
+```
+mvn --projects badapple_war tomcat7:deploy
+```
+
+or
+
+```
+mvn --projects badapple_war tomcat7:redeploy
+```
+
+## Command-line usage
 
 ```
 mvn exec:java -Dexec.mainClass="edu.unm.health.biocomp.badapple.badapple"
