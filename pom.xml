@@ -10,6 +10,7 @@
   <name>BADAPPLE</name>
   <description>Badapple apps, servlets, libs, and external dependencies ready for deployment via WAR-file.</description>
   <url>https://github.com/unmtransinfo/badapple</url>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.version>1.8</jdk.version>
