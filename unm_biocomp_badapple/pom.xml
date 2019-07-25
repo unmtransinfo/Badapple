@@ -85,7 +85,6 @@
   </dependencies>
 
   <build>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -110,12 +109,10 @@
           </archive>
         </configuration>
       </plugin>
-
     </plugins>
-
   </build>
 
-  <reporting> <!-- "mvn site" -->
+  <reporting>
     <plugins>
       <plugin> <!-- "mvn javadoc:javadoc" -->
         <groupId>org.apache.maven.plugins</groupId>
