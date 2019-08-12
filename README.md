@@ -1,4 +1,4 @@
-# Badapple <img align="right" src="/src/main/webapp/images/BadappleWorm.png" height="80">
+# Badapple <img align="right" src="doc/images/BadappleWorm.png" height="80">
 
 Bioassay data associative promiscuity pattern learning engine. 
 Methods developed at UNM for for HTS analytics and hit prioritization.
