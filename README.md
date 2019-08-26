@@ -35,6 +35,14 @@ or
 mvn --projects badapple_war tomcat7:redeploy
 ```
 
+## Testing with Jetty
+
+<http://localhost:8081/badapple/badapple>
+
+```
+mvn --projects badapple_war jetty:run
+```
+
 ## Command-line usage
 
 ```

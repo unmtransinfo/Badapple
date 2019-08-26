@@ -36,6 +36,24 @@
         <version>9.4.18-SNAPSHOT</version>
       </plugin>
 
+      <!-- jetty:run -->
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.4.19.v20190610</version>
+        <configuration>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <httpConnector>
+            <port>8081</port>
+          </httpConnector>
+          <webApp>
+            <descriptor>${project.basedir}/src/main/webapp/WEB-INF/web.xml</descriptor>
+            <contextPath>/badapple</contextPath>
+          </webApp>      
+        </configuration>
+      </plugin>
+
+      <!-- tomcat7:[re]deploy -->
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat7-maven-plugin</artifactId> <!-- Ok for v8/v9. -->

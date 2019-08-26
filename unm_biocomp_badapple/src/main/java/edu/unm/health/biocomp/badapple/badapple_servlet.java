@@ -19,10 +19,9 @@ import chemaxon.struc.*;
 import chemaxon.license.*; // LicenseManager
 
 import edu.unm.health.biocomp.badapple.*;
-import edu.unm.health.biocomp.util.db.*;
 import edu.unm.health.biocomp.util.*;
 import edu.unm.health.biocomp.util.http.*;
-
+import edu.unm.health.biocomp.util.db.*;
 
 /**	Badapple = Bioactivity data associative promiscuity pattern learning engine
 	<br>
@@ -54,13 +53,11 @@ public class badapple_servlet extends HttpServlet
   private static String UPLOADDIR=null;	// configured in web.xml
   private static String SCRATCHDIR=null;	// configured in web.xml
   private static Integer N_MAX=null;	// configured in web.xml
-  private static String JSMEURL=null; // configured in web.xml
   private static Integer MAX_POST_SIZE=Integer.MAX_VALUE; // configured in web.xml
   private static Integer PSCORE_CUTOFF_MODERATE=null;	// configured in web.xml
   private static Integer PSCORE_CUTOFF_HIGH=null;	// configured in web.xml
   private static Boolean DEBUG=false;	// configured in web.xml
   private static String LOGDIR=null;	// configured in web.xml
-  private static String MOL2IMG_APP=null; // configured in web.xml
   private static String PREFIX=null;
   private static String SERVLETNAME=null;
   private static int scratch_retire_sec=3600;
@@ -78,7 +75,8 @@ public class badapple_servlet extends HttpServlet
   private static DBCon DBCON=null;
   private static ArrayList<Molecule> molsDB=null;
   private static int depsz=90;
-  private static String mol2img_servleturl="";
+  private static String MOL2IMG_SERVLETURL=null;
+  private static String JSMEURL=null;
   private static String colorgray="#DDDDDD";	// pScore advisory color code
   private static String colorgreen="#88FF88";	// pScore advisory color code
   private static String coloryellow="#F0FF00";	// pScore advisory color code
@@ -110,8 +108,8 @@ public class badapple_servlet extends HttpServlet
     }
 
     // main logic:
-    ArrayList<String> cssincludes = new ArrayList<String>(Arrays.asList("biocomp.css"));
-    ArrayList<String> jsincludes = new ArrayList<String>(Arrays.asList("/marvin/marvin.js","biocomp.js","ddtip.js"));
+    ArrayList<String> cssincludes = new ArrayList<String>(Arrays.asList(CONTEXTPATH+"/css/biocomp.css"));
+    ArrayList<String> jsincludes = new ArrayList<String>(Arrays.asList(CONTEXTPATH+"/js/marvin/marvin.js",CONTEXTPATH+"/js/biocomp.js",CONTEXTPATH+"/js/ddtip.js"));
     if (mrequest!=null)		//method=POST, normal operation
     {
       boolean ok=initialize(request,mrequest,response);
@@ -119,8 +117,7 @@ public class badapple_servlet extends HttpServlet
       {
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
-        out.println(HtmUtils.HeaderHtm(APPNAME,jsincludes,cssincludes,JavaScript(),"",color1,request));
-        //out.println(HtmUtils.HeaderHtm(APPNAME,"",color1));
+        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request, null));
         out.println(FormHtm(response));
         ClearFrame(out,"outframe");
         ClearFrame(out,"msgframe");
@@ -134,7 +131,7 @@ public class badapple_servlet extends HttpServlet
       {
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
-        out.println(HtmUtils.HeaderHtm(APPNAME,jsincludes,cssincludes,JavaScript(),"",color1,request));
+        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request, null));
         out.println(FormHtm(response));
         ClearFrame(out,"outframe");
         ClearFrame(out,"msgframe");
@@ -174,7 +171,7 @@ public class badapple_servlet extends HttpServlet
       {
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
-        out.println(HtmUtils.HeaderHtm(APPNAME,jsincludes,cssincludes,JavaScript(),"",color2,request));
+        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color2, request, null));
         out.println(HelpHtm());
         out.println("<HR></BODY></HTML>");
       }
@@ -202,7 +199,7 @@ public class badapple_servlet extends HttpServlet
       {
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
-        out.println(HtmUtils.HeaderHtm(APPNAME,jsincludes,cssincludes,JavaScript(),"",color1,request));
+        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request, null));
         out.println(TopHtm(response));
         out.println("</BODY></HTML>");
       }
@@ -212,7 +209,7 @@ public class badapple_servlet extends HttpServlet
         boolean ok=initialize(request,mrequest,response);
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
-        out.println(HtmUtils.HeaderHtm(APPNAME,jsincludes,cssincludes,JavaScript(),"",color1,request));
+        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request, null));
         out.println(FormHtm(response));
         ClearFrame(out,"outframe");
         PrintFrame(out,"outframe","<H1 ALIGN=\"center\">"+DBNAME.replaceFirst("^.*/","")+(DBTYPE.equalsIgnoreCase("postgres")?(":"+DBSCHEMA):"")+"</H1>");
@@ -248,14 +245,14 @@ public class badapple_servlet extends HttpServlet
         PrintFrame(out,"outframe",SCORE_RANGE_KEY);
 
         String logo_htm="<TABLE CELLSPACING=5 CELLPADDING=5><TR><TD>";
-        String imghtm=("<IMG BORDER=0 SRC=\"/tomcat"+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
+        String imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
 
         String tiphtm=(APPNAME+" web app from UNM Translational Informatics.");
         String href=("http://medicine.unm.edu/informatics/");
         logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
 
         logo_htm+="</TD><TD>";
-        imghtm=("<IMG BORDER=0 SRC=\"/tomcat"+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
+        imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
         tiphtm=("JChem from ChemAxon Ltd.");
         href=("http://www.chemaxon.com");
         logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
@@ -263,25 +260,19 @@ public class badapple_servlet extends HttpServlet
         logo_htm+="</TD><TD>";
         if (CHEMKIT.equalsIgnoreCase("openchord"))
         {
-          imghtm=("<IMG BORDER=0 SRC=\"/tomcat"+CONTEXTPATH+"/images/gNovalogo.png\">");
+          imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/gNovalogo.png\">");
           tiphtm=("OpenChord from gNova Inc.");
           href=("http://www.gnova.com");
         }
         else if (CHEMKIT.equalsIgnoreCase("rdkit"))
         {
-          imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\"/tomcat"+CONTEXTPATH+"/images/rdkit_logo.png\">");
+          imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+CONTEXTPATH+"/images/rdkit_logo.png\">");
           tiphtm=("RDKit");
           href=("http://www.rdkit.org");
         }
         logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
 
-        //logo_htm+="</TD><TD>";
-        //imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\"/tomcat"+CONTEXTPATH+"/images/cdk_logo.png\">");
-        //tiphtm=("CDK");
-        //href=("http://sourceforge.net/projects/cdk/");
-        //logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
-
-        imghtm=("<IMG BORDER=0 HEIGHT=\"40\" SRC=\"/tomcat"+CONTEXTPATH+"/images/JSME_logo.png\">");
+        imghtm=("<IMG BORDER=0 HEIGHT=\"40\" SRC=\""+CONTEXTPATH+"/images/JSME_logo.png\">");
         tiphtm=("JSME Molecular Editor");
         href=("http://peter-ertl.com/jsme/");
         logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
@@ -367,7 +358,7 @@ public class badapple_servlet extends HttpServlet
     Calendar calendar=Calendar.getInstance();
 
     String logo_htm="<TABLE CELLSPACING=5 CELLPADDING=5><TR><TD>";
-    String imghtm=("<IMG BORDER=0 SRC=\"/tomcat"+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
+    String imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
 
     String tiphtm=(APPNAME+" web app from UNM Translational Informatics.");
     String href=("http://medicine.unm.edu/informatics/");
@@ -376,19 +367,19 @@ public class badapple_servlet extends HttpServlet
 
     if (CHEMKIT.equalsIgnoreCase("openchord"))
     {
-      imghtm=("<IMG BORDER=0 SRC=\"/tomcat"+CONTEXTPATH+"/images/gNovalogo.png\">");
+      imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/gNovalogo.png\">");
       tiphtm=("OpenChord from gNova Inc.");
       href=("http://www.gnova.com");
     }
     else if (CHEMKIT.equalsIgnoreCase("rdkit"))
     {
-      imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\"/tomcat"+CONTEXTPATH+"/images/rdkit_logo.png\">");
+      imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+CONTEXTPATH+"/images/rdkit_logo.png\">");
       tiphtm=("RDKit");
       href=("http://www.rdkit.org");
     }
     logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
     logo_htm+="</TD><TD>";
-    imghtm=("<IMG BORDER=0 SRC=\"/tomcat"+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
+    imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
     tiphtm=("JChem and Marvin from ChemAxon Ltd.");
     href=("http://www.chemaxon.com");
     logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
@@ -465,22 +456,14 @@ public class badapple_servlet extends HttpServlet
     Random rand = new Random();
     PREFIX=SERVLETNAME+"."+datestr+"."+String.format("%03d",rand.nextInt(1000));
 
-    //mol2img_servleturl=("http://"+SERVERNAME+"/tomcat"+CONTEXTPATH+"/mol2img");
-    //mol2img_servleturl=("http://"+SERVERNAME+"/tomcat"+CONTEXTPATH+"/cdkmol2img");
-    mol2img_servleturl=("http://"+SERVERNAME+"/tomcat"+CONTEXTPATH+"/"+MOL2IMG_APP);
+    MOL2IMG_SERVLETURL=(CONTEXTPATH+"/mol2img");
+    JSMEURL=(CONTEXTPATH+"/jsme_win.html");
 
     if (DBCON==null)
     {
       errors.add("ERROR: DB connection FAILED (dbtype="+DBTYPE+", "+DBUSR+"@"+DBHOST+").");
       return false;
     }
-    //else errors.add("DEBUG: DB connection ok (dbtype="+DBTYPE+", "+DBUSR+"@"+DBHOST+").");
-
-    //try { LicenseManager.setLicenseFile("/usr/local/tomcat/.chemaxon/license.cxl"); }
-    //catch (Exception e) { errors.add("ChemAxon license exception: "+e.toString()); }
-    //LicenseManager.refresh();
-    //for (String prod: LicenseManager.getProductList(true)) errors.add("ChemAxon licensed product: "+prod);
-
 
     if (mrequest==null) return true;
 
@@ -803,14 +786,14 @@ public class badapple_servlet extends HttpServlet
       {
         imghtm=HtmUtils.Smi2ImgHtm(scafsmi,"&clearqprops=true",
 		depsz,(int)Math.floor(1.25f*depsz),
-		mol2img_servleturl,true,4,"parent.formframe.go_zoom_smi2img");
+		MOL2IMG_SERVLETURL,true,4,"parent.formframe.go_zoom_smi2img");
       }
       else
       {
         // Depict smiles; highlight using scafsmi as smarts.  smilesmatch option allows "[nH]" to match.
         imghtm=HtmUtils.Smi2ImgHtm(qsmiles,"&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi,"UTF-8"),
 		depsz,(int)Math.floor(1.25f*depsz),
-		mol2img_servleturl,true,4,"parent.formframe.go_zoom_smi2img");
+		MOL2IMG_SERVLETURL,true,4,"parent.formframe.go_zoom_smi2img");
       }
       Float pscore=score.getScore();
       String bgcolor;
@@ -1007,11 +990,11 @@ public class badapple_servlet extends HttpServlet
           // Depict qmol; highlight using scafsmi as smarts.  smilesmatch option allows "[nH]" to match.
           String imghtm_mol=HtmUtils.Smi2ImgHtm(qsmiles,"&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi,"UTF-8"),
 		    depsz,(int)Math.floor(1.25f*depsz),
-		    mol2img_servleturl,true,4,"parent.formframe.go_zoom_smi2img");
+		    MOL2IMG_SERVLETURL,true,4,"parent.formframe.go_zoom_smi2img");
 
           String imghtm_scaf=HtmUtils.Smi2ImgHtm(scafsmi,"&clearqprops=true",
 		    depsz,(int)Math.floor(1.25f*depsz),
-		    mol2img_servleturl,true,4,"parent.formframe.go_zoom_smi2img");
+		    MOL2IMG_SERVLETURL,true,4,"parent.formframe.go_zoom_smi2img");
       
           Float pscore=score.getScore();
           String bgcolor_scaf;
@@ -1132,7 +1115,7 @@ public class badapple_servlet extends HttpServlet
 //        {
 //          imghtm=HtmUtils.Smi2ImgHtm(MolExporter.exportToFormat(mol,"smiles:"),"",
 //		depsz,(int)Math.floor(1.25f*depsz),
-//		mol2img_servleturl,true,4,"parent.formframe.go_zoom_smi2img");
+//		MOL2IMG_SERVLETURL,true,4,"parent.formframe.go_zoom_smi2img");
 //        }
 //        else
 //        {
@@ -1140,7 +1123,7 @@ public class badapple_servlet extends HttpServlet
 //          imghtm=HtmUtils.Smi2ImgHtm(MolExporter.exportToFormat(mol,"smiles:"),
 //		"&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi,"UTF-8"),
 //		depsz,(int)Math.floor(1.25f*depsz),
-//		mol2img_servleturl,true,4,"parent.formframe.go_zoom_smi2img");
+//		MOL2IMG_SERVLETURL,true,4,"parent.formframe.go_zoom_smi2img");
 //        }
 //        rhtm+=(imghtm+"<BR>\n");
 //      }
@@ -1335,15 +1318,15 @@ public class badapple_servlet extends HttpServlet
     super.init(conf);
     CONTEXT=getServletContext();
     CONTEXTPATH=CONTEXT.getContextPath();
-    //CONFIG=conf;
+
     try { APPNAME=conf.getInitParameter("APPNAME"); }
     catch (Exception e) { APPNAME=this.getServletName(); }
     UPLOADDIR=conf.getInitParameter("UPLOADDIR");
     if (UPLOADDIR==null) throw new ServletException("ERROR: UPLOADDIR parameter required.");
     SCRATCHDIR=conf.getInitParameter("SCRATCHDIR");
     if (SCRATCHDIR==null) throw new ServletException("ERROR: SCRATCHDIR parameter required.");
-    LOGDIR=conf.getInitParameter("LOGDIR")+CONTEXTPATH;
-    if (LOGDIR==null) LOGDIR="/usr/local/tomcat/logs"+CONTEXTPATH;
+    LOGDIR=conf.getInitParameter("LOGDIR");
+    if (LOGDIR==null) LOGDIR="/tmp"+CONTEXTPATH+"_logs";
     DBTYPE=conf.getInitParameter("DBTYPE");
     if (DBTYPE==null) throw new ServletException("ERROR: DBTYPE parameter required.");
     DBNAME=conf.getInitParameter("DBNAME");
@@ -1371,10 +1354,6 @@ public class badapple_servlet extends HttpServlet
     catch (Exception e) { PSCORE_CUTOFF_MODERATE=100; }
     try { PSCORE_CUTOFF_HIGH=Integer.parseInt(conf.getInitParameter("PSCORE_CUTOFF_HIGH")); }
     catch (Exception e) { PSCORE_CUTOFF_HIGH=300; }
-    try { MOL2IMG_APP=conf.getInitParameter("MOL2IMG_APP"); }
-    catch (Exception e) { MOL2IMG_APP="mol2img"; }
-    JSMEURL=conf.getInitParameter("JSMEURL");
-    if (JSMEURL==null) { JSMEURL="/tomcat/"+APPNAME+"/jsme_win.html"; }
 
     try { String s=conf.getInitParameter("DEBUG"); if (s.equalsIgnoreCase("TRUE")) DEBUG=true; }
     catch (Exception e) { DEBUG=false; }

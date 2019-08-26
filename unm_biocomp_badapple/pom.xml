@@ -23,7 +23,7 @@
   <dependencies>
     <dependency>
       <groupId>unmbiocomputing</groupId>
-      <artifactId>unm_biocomp_hscaf</artifactId>
+      <artifactId>unm_biocomp_util</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -33,7 +33,12 @@
     </dependency>
     <dependency>
       <groupId>unmbiocomputing</groupId>
-      <artifactId>unm_biocomp_util</artifactId>
+      <artifactId>unm_biocomp_hscaf</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>unmbiocomputing</groupId>
+      <artifactId>unm_biocomp_cdk</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
 
