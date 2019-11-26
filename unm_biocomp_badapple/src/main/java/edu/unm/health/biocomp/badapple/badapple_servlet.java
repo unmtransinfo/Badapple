@@ -82,6 +82,7 @@ public class badapple_servlet extends HttpServlet
   private static String coloryellow="#F0FF00";	// pScore advisory color code
   private static String colorred="#FF8888";	// pScore advisory color code
   private static String SCORE_RANGE_KEY="";
+  private static String PROXY_PREFIX=null;	// configured in web.xml
 
   /////////////////////////////////////////////////////////////////////////////
   public void doPost(HttpServletRequest request,HttpServletResponse response)
@@ -108,39 +109,39 @@ public class badapple_servlet extends HttpServlet
     }
 
     // main logic:
-    ArrayList<String> cssincludes = new ArrayList<String>(Arrays.asList(CONTEXTPATH+"/css/biocomp.css"));
-    ArrayList<String> jsincludes = new ArrayList<String>(Arrays.asList(CONTEXTPATH+"/js/marvin/marvin.js",CONTEXTPATH+"/js/biocomp.js",CONTEXTPATH+"/js/ddtip.js"));
+    ArrayList<String> cssincludes = new ArrayList<String>(Arrays.asList(PROXY_PREFIX+CONTEXTPATH+"/css/biocomp.css"));
+    ArrayList<String> jsincludes = new ArrayList<String>(Arrays.asList(PROXY_PREFIX+CONTEXTPATH+"/js/biocomp.js",PROXY_PREFIX+CONTEXTPATH+"/js/ddtip.js"));
     if (mrequest!=null)		//method=POST, normal operation
     {
-      boolean ok=initialize(request,mrequest,response);
+      boolean ok=initialize(request, mrequest, response);
       if (!ok)
       {
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
-        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request, null));
+        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request));
         out.println(FormHtm(response));
-        ClearFrame(out,"outframe");
-        ClearFrame(out,"msgframe");
-        PrintFrame(out,"msgframe",errors);
-        closeDoc(out,"topframe");
-        closeDoc(out,"outframe");
-        closeDoc(out,"msgframe");
+        ClearFrame(out, "outframe");
+        ClearFrame(out, "msgframe");
+        PrintFrame(out, "msgframe", errors);
+        closeDoc(out, "topframe");
+        closeDoc(out, "outframe");
+        closeDoc(out, "msgframe");
         out.println("</BODY></HTML>");
       }
       else if (params.isChecked("gobad"))
       {
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
-        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request, null));
+        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request));
         out.println(FormHtm(response));
-        ClearFrame(out,"outframe");
-        ClearFrame(out,"msgframe");
+        ClearFrame(out, "outframe");
+        ClearFrame(out, "msgframe");
         Integer n_mol=0;
         Integer n_scaf=0;
         long t0=System.currentTimeMillis();
         //if (params.getVal("runmode").equals("multi"))
         //{
-          n_mol=GoBadapple_Multi(molsDB,response);
+          n_mol=GoBadapple_Multi(molsDB, response);
           if (n_mol>0) outputs.add(SCORE_RANGE_KEY);
         //}
         //else
@@ -150,17 +151,17 @@ public class badapple_servlet extends HttpServlet
         //  n_mol=1;
         //}
         long t=System.currentTimeMillis()-t0;
-        errors.add("elapsed query time: "+String.format("%.2f",(float)t/1000.0f)+"s");
-        PrintFrame(out,"outframe",outputs);
-        PrintFrame(out,"msgframe",errors);
-        closeDoc(out,"topframe");
-        closeDoc(out,"outframe");
-        closeDoc(out,"msgframe");
+        errors.add("elapsed query time: "+String.format("%.2f", (float)t/1000.0f)+"s");
+        PrintFrame(out, "outframe", outputs);
+        PrintFrame(out, "msgframe", errors);
+        closeDoc(out, "topframe");
+        closeDoc(out, "outframe");
+        closeDoc(out, "msgframe");
         out.println("</BODY></HTML>");
-        PrintWriter out_log = new PrintWriter(new BufferedWriter(new FileWriter(logfile,true)));
-        out_log.printf("%s\t%s\t%d\n",datestr,REMOTEHOST,n_mol);
+        PrintWriter out_log = new PrintWriter(new BufferedWriter(new FileWriter(logfile, true)));
+        out_log.printf("%s\t%s\t%d\n", datestr, REMOTEHOST, n_mol);
         out_log.close();
-        HtmUtils.PurgeScratchDirs(Arrays.asList(SCRATCHDIR),scratch_retire_sec,params.isChecked("verbose"),".",(HttpServlet) this);
+        HtmUtils.PurgeScratchDirs(Arrays.asList(SCRATCHDIR), scratch_retire_sec, params.isChecked("verbose"), ".", (HttpServlet) this);
       }
     }
     else
@@ -171,7 +172,7 @@ public class badapple_servlet extends HttpServlet
       {
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
-        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color2, request, null));
+        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color2, request));
         out.println(HelpHtm());
         out.println("<HR></BODY></HTML>");
       }
@@ -180,18 +181,18 @@ public class badapple_servlet extends HttpServlet
         response.setContentType("text/plain");
         PrintWriter out=response.getWriter();
         HashMap<String,String> t = new HashMap<String,String>();
-        t.put("JCHEM_LICENSE_OK",(LicenseManager.isLicensed(LicenseManager.JCHEM)?"True":"False"));
-        out.print(HtmUtils.TestTxt(APPNAME,t));
+        t.put("JCHEM_LICENSE_OK", (LicenseManager.isLicensed(LicenseManager.JCHEM)?"True":"False"));
+        out.print(HtmUtils.TestTxt(APPNAME, t));
       }
       else if (downloadtxt!=null && downloadtxt.length()>0) // POST param
       {
         ServletOutputStream ostream=response.getOutputStream();
-        HtmUtils.DownloadString(response,ostream,downloadtxt,request.getParameter("fname"));
+        HtmUtils.DownloadString(response, ostream, downloadtxt, request.getParameter("fname"));
       }
       else if (downloadfile!=null && downloadfile.length()>0) // POST param
       {
         ServletOutputStream ostream=response.getOutputStream();
-        HtmUtils.DownloadFile(response,ostream,downloadfile,
+        HtmUtils.DownloadFile(response, ostream, downloadfile,
           request.getParameter("fname"));
       }
       else if (request.getParameter("topframe")!=null)
@@ -199,36 +200,36 @@ public class badapple_servlet extends HttpServlet
       {
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
-        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request, null));
+        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request));
         out.println(TopHtm(response));
         out.println("</BODY></HTML>");
       }
       else if (request.getParameter("formframe")!=null)
       // GET method , initial invocation of formframe w/ no params
       {
-        boolean ok=initialize(request,mrequest,response);
+        boolean ok=initialize(request, mrequest, response);
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
-        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request, null));
+        out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request));
         out.println(FormHtm(response));
-        ClearFrame(out,"outframe");
-        PrintFrame(out,"outframe","<H1 ALIGN=\"center\">"+DBNAME.replaceFirst("^.*/","")+(DBTYPE.equalsIgnoreCase("postgres")?(":"+DBSCHEMA):"")+"</H1>");
-        ClearFrame(out,"msgframe");
-        PrintFrame(out,"msgframe",errors);
-        PrintFrame(out,"outframe","server: "+DBHOST);
-        PrintFrame(out,"outframe","dbname: "+DBNAME);
-        PrintFrame(out,"outframe","schema: "+DBSCHEMA);
+        ClearFrame(out, "outframe");
+        PrintFrame(out, "outframe", "<H1 ALIGN=\"center\">"+DBNAME.replaceFirst("^.*/", "")+(DBTYPE.equalsIgnoreCase("postgres")?(":"+DBSCHEMA):"")+"</H1>");
+        ClearFrame(out, "msgframe");
+        PrintFrame(out, "msgframe", errors);
+        PrintFrame(out, "outframe", "server: "+DBHOST);
+        PrintFrame(out, "outframe", "dbname: "+DBNAME);
+        PrintFrame(out, "outframe", "schema: "+DBSCHEMA);
         try {
-          PrintFrame(out,"outframe","<PRE>"+badapple_utils.DBDescribeTxt(DBCON,DBSCHEMA)+"</PRE>");
+          PrintFrame(out, "outframe", "<PRE>"+badapple_utils.DBDescribeTxt(DBCON, DBSCHEMA)+"</PRE>");
 
           if (CHEMKIT.equalsIgnoreCase("rdkit"))
-            PrintFrame(out,"outframe","<PRE>RDKit_EXTENSION_VERSION: "+badapple_utils.RDKit_Version(DBCON)+"</PRE>");
+            PrintFrame(out, "outframe", "<PRE>RDKit_EXTENSION_VERSION: "+badapple_utils.RDKit_Version(DBCON)+"</PRE>");
         }
         catch (Exception e)
-        { PrintFrame(out,"outframe","DB error: <PRE>"+e.getMessage()+"</PRE>"); }
+        { PrintFrame(out, "outframe", "DB error: <PRE>"+e.getMessage()+"</PRE>"); }
         try {
-          HashMap<String,Integer> medians=badapple_utils.GetMedians(DBCON,DBSCHEMA);
-          PrintFrame(out,"msgframe","<PRE>"
+          HashMap<String, Integer> medians=badapple_utils.GetMedians(DBCON, DBSCHEMA);
+          PrintFrame(out, "msgframe", "<PRE>"
             +"median_cTested="+medians.get("median_cTested")+"\n"
             +"median_sTested="+medians.get("median_sTested")+"\n"
             +"median_aTested="+medians.get("median_aTested")+"\n"
@@ -236,58 +237,58 @@ public class badapple_servlet extends HttpServlet
             +"</PRE>");
         }
         catch (Exception e)
-        { PrintFrame(out,"outframe","DB error (GetMedians): <PRE>"+e.getMessage()+"</PRE>"); }
+        { PrintFrame(out, "outframe", "DB error (GetMedians): <PRE>"+e.getMessage()+"</PRE>"); }
 
         //try { DBCON.close(); }
         //catch (SQLException e)
-        //{ PrintFrame(out,"outframe","SQLException: <PRE>"+e.getMessage()+"</PRE>"); }
+        //{ PrintFrame(out, "outframe", "SQLException: <PRE>"+e.getMessage()+"</PRE>"); }
 
-        PrintFrame(out,"outframe",SCORE_RANGE_KEY);
+        PrintFrame(out, "outframe", SCORE_RANGE_KEY);
 
         String logo_htm="<TABLE CELLSPACING=5 CELLPADDING=5><TR><TD>";
-        String imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
+        String imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
 
         String tiphtm=(APPNAME+" web app from UNM Translational Informatics.");
         String href=("http://medicine.unm.edu/informatics/");
-        logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
+        logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
 
         logo_htm+="</TD><TD>";
-        imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
+        imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
         tiphtm=("JChem from ChemAxon Ltd.");
         href=("http://www.chemaxon.com");
-        logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
+        logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
 
         logo_htm+="</TD><TD>";
         if (CHEMKIT.equalsIgnoreCase("openchord"))
         {
-          imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/gNovalogo.png\">");
+          imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/gNovalogo.png\">");
           tiphtm=("OpenChord from gNova Inc.");
           href=("http://www.gnova.com");
         }
         else if (CHEMKIT.equalsIgnoreCase("rdkit"))
         {
-          imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+CONTEXTPATH+"/images/rdkit_logo.png\">");
+          imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/rdkit_logo.png\">");
           tiphtm=("RDKit");
           href=("http://www.rdkit.org");
         }
-        logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
+        logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
 
-        imghtm=("<IMG BORDER=0 HEIGHT=\"40\" SRC=\""+CONTEXTPATH+"/images/JSME_logo.png\">");
+        imghtm=("<IMG BORDER=0 HEIGHT=\"40\" SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/JSME_logo.png\">");
         tiphtm=("JSME Molecular Editor");
         href=("http://peter-ertl.com/jsme/");
-        logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
+        logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
 
         logo_htm+="</TD></TR></TABLE>";
 
-        PrintFrame(out,"outframe",logo_htm);
+        PrintFrame(out, "outframe", logo_htm);
 
-        closeDoc(out,"topframe");
-        closeDoc(out,"outframe");
-        closeDoc(out,"msgframe");
+        closeDoc(out, "topframe");
+        closeDoc(out, "outframe");
+        closeDoc(out, "msgframe");
         out.println("<SCRIPT>go_reset(window.document.mainform)</SCRIPT>");
         out.println("</BODY></HTML>");
       }
-      else	// GET method, initial invocation of servlet w/ no params
+      else	// GET method,  initial invocation of servlet w/ no params
       {
         PrintWriter out=response.getWriter();
         response.setContentType("text/html");
@@ -297,17 +298,17 @@ public class badapple_servlet extends HttpServlet
     }
   }
   /////////////////////////////////////////////////////////////////////////////
-  private static void PrintFrame(PrintWriter out,String fname,String str)
+  private static void PrintFrame(PrintWriter out, String fname, String str)
   {
-    PrintFrame(out,fname,new ArrayList<String>(Arrays.asList(str)));
+    PrintFrame(out, fname, new ArrayList<String>(Arrays.asList(str)));
   }
-  private static void PrintFrame(PrintWriter out,String fname,ArrayList<String> strs)
+  private static void PrintFrame(PrintWriter out, String fname, ArrayList<String> strs)
   {
     for (int i=0;i<strs.size();++i)
     {
-      strs.set(i,strs.get(i).replace("\"","\\\""));
-      strs.set(i,strs.get(i).replace("\n","\\n"));
-      strs.set(i,strs.get(i).replace("\r","\\n"));
+      strs.set(i, strs.get(i).replace("\"", "\\\""));
+      strs.set(i, strs.get(i).replace("\n", "\\n"));
+      strs.set(i, strs.get(i).replace("\r", "\\n"));
     }
     out.println("<SCRIPT>");
     out.println("var frame="+fname+";");
@@ -315,16 +316,16 @@ public class badapple_servlet extends HttpServlet
     for (int i=0;i<strs.size();++i)
     {
       out.print("\""+strs.get(i)+"<BR>\"");
-      if (i<strs.size()-1) out.print(",\n");
+      if (i<strs.size()-1) out.print(", \n");
     }
     out.println(");");
     if (fname.equals("msgframe"))
-      out.println("frame.scrollTo(0,9999);\n</SCRIPT>");
+      out.println("frame.scrollTo(0, 9999);\n</SCRIPT>");
     else if (fname.equals("outframe"))
-      out.println("frame.scrollTo(0,0);\n</SCRIPT>");
+      out.println("frame.scrollTo(0, 0);\n</SCRIPT>");
   }
   /////////////////////////////////////////////////////////////////////////////
-  private static void ClearFrame(PrintWriter out,String fname)
+  private static void ClearFrame(PrintWriter out, String fname)
   {
     out.println("<SCRIPT>");
     out.println("var frame="+fname+";");
@@ -333,13 +334,13 @@ public class badapple_servlet extends HttpServlet
     out.println("</SCRIPT>");
     out.println("<SCRIPT>");
     out.println("var frame="+fname+";");
-    out.println("frame.document.writeln(\"<HTML><HEAD><STYLE TYPE=\\\"text/css\\\"> html,button,td,p,select,input { font-family: Arial,Helvetica,'sans serif'; font-size: 12px; color: #000066; }</STYLE></HEAD><BODY BGCOLOR=\\\""+color2+"\\\">\");");
+    out.println("frame.document.writeln(\"<HTML><HEAD><STYLE TYPE=\\\"text/css\\\"> html, button, td, p, select, input { font-family: Arial, Helvetica, 'sans serif'; font-size: 12px; color: #000066; }</STYLE></HEAD><BODY BGCOLOR=\\\""+color2+"\\\">\");");
     out.println("</SCRIPT>");
   }
   /////////////////////////////////////////////////////////////////////////////
   /**	Close doc in named frame ("outframe"|"msgframe").
   */
-  private void closeDoc(PrintWriter out,String fname)
+  private void closeDoc(PrintWriter out, String fname)
   {
     out.println("<SCRIPT>");
     out.println("var frame=parent."+fname+";");
@@ -347,9 +348,9 @@ public class badapple_servlet extends HttpServlet
     out.println("</SCRIPT>");
   }
   /////////////////////////////////////////////////////////////////////////////
-  private boolean initialize(HttpServletRequest request,MultipartRequest mrequest,
+  private boolean initialize(HttpServletRequest request, MultipartRequest mrequest,
   	HttpServletResponse response)
-      throws IOException,ServletException
+      throws IOException, ServletException
   {
     SERVLETNAME=this.getServletName();
     outputs=new ArrayList<String>();
@@ -358,31 +359,31 @@ public class badapple_servlet extends HttpServlet
     Calendar calendar=Calendar.getInstance();
 
     String logo_htm="<TABLE CELLSPACING=5 CELLPADDING=5><TR><TD>";
-    String imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
+    String imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
 
     String tiphtm=(APPNAME+" web app from UNM Translational Informatics.");
     String href=("http://medicine.unm.edu/informatics/");
-    logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
+    logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD><TD>";
 
     if (CHEMKIT.equalsIgnoreCase("openchord"))
     {
-      imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/gNovalogo.png\">");
+      imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/gNovalogo.png\">");
       tiphtm=("OpenChord from gNova Inc.");
       href=("http://www.gnova.com");
     }
     else if (CHEMKIT.equalsIgnoreCase("rdkit"))
     {
-      imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+CONTEXTPATH+"/images/rdkit_logo.png\">");
+      imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/rdkit_logo.png\">");
       tiphtm=("RDKit");
       href=("http://www.rdkit.org");
     }
-    logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
+    logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD><TD>";
-    imghtm=("<IMG BORDER=0 SRC=\""+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
+    imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
     tiphtm=("JChem and Marvin from ChemAxon Ltd.");
     href=("http://www.chemaxon.com");
-    logo_htm+=(HtmUtils.HtmTipper(imghtm,tiphtm,href,200,"white","parent.formframe"));
+    logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD></TR></TABLE>";
 
     errors.add(logo_htm);
@@ -405,7 +406,7 @@ public class badapple_servlet extends HttpServlet
     if (!logfile.exists())
     {
       logfile.createNewFile();
-      logfile.setWritable(true,true);
+      logfile.setWritable(true, true);
       PrintWriter out_log=new PrintWriter(logfile);
       out_log.println("date\tip\tNrows"); 
       out_log.flush();
@@ -435,13 +436,13 @@ public class badapple_servlet extends HttpServlet
     buff.close(); //Else can result in error: "Too many open files"
     if (n_lines>2)
     {
-      calendar.set(Integer.parseInt(startdate.substring(0,4)),
-               Integer.parseInt(startdate.substring(4,6))-1,
-               Integer.parseInt(startdate.substring(6,8)),
-               Integer.parseInt(startdate.substring(8,10)),
-               Integer.parseInt(startdate.substring(10,12)),0);
+      calendar.set(Integer.parseInt(startdate.substring(0, 4)),
+               Integer.parseInt(startdate.substring(4, 6))-1,
+               Integer.parseInt(startdate.substring(6, 8)),
+               Integer.parseInt(startdate.substring(8, 10)),
+               Integer.parseInt(startdate.substring(10, 12)), 0);
 
-      DateFormat df=DateFormat.getDateInstance(DateFormat.FULL,Locale.US);
+      DateFormat df=DateFormat.getDateInstance(DateFormat.FULL, Locale.US);
       errors.add("since "+df.format(calendar.getTime())+", times used: "+(n_lines-1));
     }
 
@@ -454,10 +455,10 @@ public class badapple_servlet extends HttpServlet
       calendar.get(Calendar.MINUTE),
       calendar.get(Calendar.SECOND));
     Random rand = new Random();
-    PREFIX=SERVLETNAME+"."+datestr+"."+String.format("%03d",rand.nextInt(1000));
+    PREFIX=SERVLETNAME+"."+datestr+"."+String.format("%03d", rand.nextInt(1000));
 
-    MOL2IMG_SERVLETURL=(CONTEXTPATH+"/mol2img");
-    JSMEURL=(CONTEXTPATH+"/jsme_win.html");
+    MOL2IMG_SERVLETURL=(PROXY_PREFIX+CONTEXTPATH+"/mol2img");
+    JSMEURL=(PROXY_PREFIX+CONTEXTPATH+"/jsme_win.html");
 
     if (DBCON==null)
     {
@@ -473,7 +474,7 @@ public class badapple_servlet extends HttpServlet
     {
       String key=(String)e.nextElement();
       if (mrequest.getParameter(key)!=null)
-        params.setVal(key,mrequest.getParameter(key));
+        params.setVal(key, mrequest.getParameter(key));
     }
 
     if (params.getVal("depsize").equals("xs"))      depsz=60;
@@ -494,8 +495,8 @@ public class badapple_servlet extends HttpServlet
     String fname="infileDB";
     File fileDB=mrequest.getFile(fname);
     String intxt=params.getVal("intxt");
-    intxt=intxt.replaceFirst("[\\s]+$","");
-    intxt=intxt.replaceFirst("^([\n\r]+)","untitled$1");
+    intxt=intxt.replaceFirst("[\\s]+$", "");
+    intxt=intxt.replaceFirst("^([\n\r]+)", "untitled$1");
     if (fileDB!=null)
     {
       if (params.isChecked("file2txtDB") && fileDB!=null)
@@ -511,11 +512,11 @@ public class badapple_servlet extends HttpServlet
             break;
           }
         }
-        params.setVal("intxt",intxt);
+        params.setVal("intxt", intxt);
       }
       else
       {
-        params.setVal("intxt","");
+        params.setVal("intxt", "");
       }
     }
     molsDB=new ArrayList<Molecule>();
@@ -526,9 +527,9 @@ public class badapple_servlet extends HttpServlet
       if (ifmt_auto!=null)
       {
         if (fileDB!=null)
-          molReaderDB=new MolImporter(fileDB,ifmt_auto);
+          molReaderDB=new MolImporter(fileDB, ifmt_auto);
         else if (intxt.length()>0)
-          molReaderDB=new MolImporter(new ByteArrayInputStream(intxt.getBytes()),ifmt_auto);
+          molReaderDB=new MolImporter(new ByteArrayInputStream(intxt.getBytes()), ifmt_auto);
       }
       else
       {
@@ -540,7 +541,7 @@ public class badapple_servlet extends HttpServlet
     }
     else
     {
-      molReaderDB=new MolImporter(new FileInputStream(fileDB),params.getVal("molfmtDB"));
+      molReaderDB=new MolImporter(new FileInputStream(fileDB), params.getVal("molfmtDB"));
     }
     if (params.isChecked("verbose"))
       errors.add("input DB format:  "+molReaderDB.getFormat()+" ("+MFileFormatUtil.getFormat(molReaderDB.getFormat()).getDescription()+")");
@@ -613,10 +614,10 @@ public class badapple_servlet extends HttpServlet
   {
     return (
     ("<TABLE WIDTH=\"100%\" CELLSPACING=\"0\" CELLPADDING=\"0\"><TR>\n")
-    +("<TD WIDTH=\"20%\" VALIGN=\"top\"><DIV STYLE=\"font-family: Arial,Helvetica,'sans serif'; font-size: 24px; font-weight: bold\">"+APPNAME+"</DIV></TD>\n")
+    +("<TD WIDTH=\"20%\" VALIGN=\"top\"><DIV STYLE=\"font-family: Arial, Helvetica, 'sans serif'; font-size: 24px; font-weight: bold\">"+APPNAME+"</DIV></TD>\n")
     +("<TD WIIDTH=\"50%\" VALIGN=\"top\">- Bioactivity data associative promiscuity pattern learning engine\n")
     +"<TD ALIGN=\"right\" VALIGN=\"top\">\n"
-    +("<BUTTON TYPE=BUTTON onClick=\"void window.open('"+response.encodeURL(SERVLETNAME)+"?help=TRUE','helpwin','width=700,height=400,scrollbars=1,resizable=1')\"><B>Help</B></BUTTON>\n")
+    +("<BUTTON TYPE=BUTTON onClick=\"void window.open('"+response.encodeURL(SERVLETNAME)+"?help=TRUE', 'helpwin', 'width=700, height=400, scrollbars=1, resizable=1')\"><B>Help</B></BUTTON>\n")
     +("<BUTTON TYPE=BUTTON onClick=\"parent.formframe.go_demo(parent.formframe.mainform)\"><B>Demo</B></BUTTON>\n")
     +("<BUTTON TYPE=BUTTON onClick=\"parent.location.replace('"+response.encodeURL(SERVLETNAME)+"')\"><B>Reset</B></BUTTON>\n")
     +"</TD></TR></TABLE>\n"
@@ -624,7 +625,7 @@ public class badapple_servlet extends HttpServlet
   }
   /////////////////////////////////////////////////////////////////////////////
   private static String FormHtm(HttpServletResponse response)
-      throws IOException,ServletException
+      throws IOException, ServletException
   {
     String deptype_scaf=""; String deptype_mol=""; String deptype_none="";
     if (params.getVal("deptype").equals("scaf")) deptype_scaf="CHECKED";
@@ -643,7 +644,7 @@ public class badapple_servlet extends HttpServlet
     depsize_menu+=("<OPTION VALUE=\"l\">L");
     depsize_menu+=("<OPTION VALUE=\"xl\">XL");
     depsize_menu+="</SELECT>\n";
-    depsize_menu=depsize_menu.replace("\""+params.getVal("depsize")+"\">","\""+params.getVal("depsize")+"\" SELECTED>");
+    depsize_menu=depsize_menu.replace("\""+params.getVal("depsize")+"\">", "\""+params.getVal("depsize")+"\" SELECTED>");
 
     //String runmode_single=""; String runmode_multi="";
     //if (params.getVal("runmode").equals("single")) runmode_single="CHECKED";
@@ -723,10 +724,10 @@ public class badapple_servlet extends HttpServlet
   {
     int n_rows=0;
     ArrayList<ScaffoldScore> scores=null;
-    try { scores=badapple_utils.GetScaffoldScores(DBCON,DBSCHEMA,CHEMKIT,mol,params.isChecked("verbose")?0:2); }
+    try { scores=badapple_utils.GetScaffoldScores(DBCON, DBSCHEMA, CHEMKIT, mol, params.isChecked("verbose")?0:2); }
     catch (Exception e) { errors.add("Exception (GetScaffoldScores): "+e.getMessage()); }
     if (scores==null) return n_rows;
-    try { n_rows=Scores2Output_Single(mol,scores); }
+    try { n_rows=Scores2Output_Single(mol, scores); }
     catch (Exception e) { errors.add("Exception (Scores2Output_Single): "+e.getMessage()); }
     return n_rows;
   }
@@ -750,10 +751,10 @@ public class badapple_servlet extends HttpServlet
   /**	Output detailed data table for one molecule.
   */
   private static Integer Scores2Output_Single(Molecule qmol, ArrayList<ScaffoldScore> scores)
-      throws SQLException,IOException
+      throws SQLException, IOException
   {
     String qsmiles=null;
-    try { qsmiles=MolExporter.exportToFormat(qmol,"smiles:u,+a_gen"); } /// Aromatize so matching/highlighting works.
+    try { qsmiles=MolExporter.exportToFormat(qmol, "smiles:u,+a_gen"); } /// Aromatize so matching/highlighting works.
     catch (IOException e) { qsmiles=params.getVal("smiles"); }
     if (params.isChecked("verbose"))
       errors.add("query: "+qsmiles);
@@ -770,30 +771,30 @@ public class badapple_servlet extends HttpServlet
     //if (params.getVal("sortby").equals("score"))
       Collections.sort(scores);
     //else if (params.getVal("sortby").equals("id"))
-    //  Collections.sort(scores,new ScaffoldScore_CmpID());
+    //  Collections.sort(scores, new ScaffoldScore_CmpID());
     //else if (params.getVal("sortby").equals("size"))
-    //  Collections.sort(scores,new ScaffoldScore_CmpSize());
+    //  Collections.sort(scores, new ScaffoldScore_CmpSize());
 
     int n_scaf=0;
     for (ScaffoldScore score: scores)
     {
       ++n_scaf;
       String scafsmi=score.getSmiles();
-      Molecule mol_scaf=MolImporter.importMol(scafsmi,"smiles:");
+      Molecule mol_scaf=MolImporter.importMol(scafsmi, "smiles:");
       if (params.isChecked("verbose")) errors.add("scaffold: ["+score.getID()+"] "+scafsmi);
       String imghtm="";
       if (params.getVal("deptype").equals("scaf"))
       {
-        imghtm=HtmUtils.Smi2ImgHtm(scafsmi,"&clearqprops=true",
-		depsz,(int)Math.floor(1.25f*depsz),
-		MOL2IMG_SERVLETURL,true,4,"parent.formframe.go_zoom_smi2img");
+        imghtm=HtmUtils.Smi2ImgHtm(scafsmi, "&clearqprops=true",
+		depsz, (int)Math.floor(1.25f*depsz),
+		MOL2IMG_SERVLETURL, true, 4, "parent.formframe.go_zoom_smi2img");
       }
       else
       {
         // Depict smiles; highlight using scafsmi as smarts.  smilesmatch option allows "[nH]" to match.
-        imghtm=HtmUtils.Smi2ImgHtm(qsmiles,"&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi,"UTF-8"),
-		depsz,(int)Math.floor(1.25f*depsz),
-		MOL2IMG_SERVLETURL,true,4,"parent.formframe.go_zoom_smi2img");
+        imghtm=HtmUtils.Smi2ImgHtm(qsmiles, "&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi, "UTF-8"),
+		depsz, (int)Math.floor(1.25f*depsz),
+		MOL2IMG_SERVLETURL, true, 4, "parent.formframe.go_zoom_smi2img");
       }
       Float pscore=score.getScore();
       String bgcolor;
@@ -870,7 +871,7 @@ public class badapple_servlet extends HttpServlet
 	and provide data as downloadable CSV.
 	One row per input molecule.
   */
-  private static Integer GoBadapple_Multi(List<Molecule> mols,HttpServletResponse response)
+  private static Integer GoBadapple_Multi(List<Molecule> mols, HttpServletResponse response)
 	throws MolExportException
   {
     int n_mol=0;
@@ -878,12 +879,12 @@ public class badapple_servlet extends HttpServlet
     for (Molecule mol: mols)
     {
       try {
-        ArrayList<ScaffoldScore> scores=badapple_utils.GetScaffoldScores(DBCON,DBSCHEMA,CHEMKIT,mol,0);
+        ArrayList<ScaffoldScore> scores=badapple_utils.GetScaffoldScores(DBCON, DBSCHEMA, CHEMKIT, mol, 0);
         scoreses.add(scores);
       }
       catch (Exception e) { errors.add("Exception: "+e.getMessage()); }
     }
-    try { n_mol+=Scores2Output_Multi(mols,scoreses,response); }
+    try { n_mol+=Scores2Output_Multi(mols, scoreses, response); }
     catch (SQLException e) { errors.add("SQLException: "+e.getMessage()); }
     catch (IOException e) { errors.add("IOException: "+e.getMessage()); }
 
@@ -896,8 +897,8 @@ public class badapple_servlet extends HttpServlet
 	pScore_mol_nd = pScore for highest scoring scaffold not in any drug<br/>
 	Advisory based on highest scoring scaffold. <br/>
   */
-  private static Integer Scores2Output_Multi(List<Molecule> mols, ArrayList<ArrayList<ScaffoldScore> > scoreses,HttpServletResponse response)
-      throws SQLException,IOException
+  private static Integer Scores2Output_Multi(List<Molecule> mols, ArrayList<ArrayList<ScaffoldScore> > scoreses, HttpServletResponse response)
+      throws SQLException, IOException
   {
     File dout=new File(SCRATCHDIR);
     if (!dout.exists())
@@ -905,9 +906,9 @@ public class badapple_servlet extends HttpServlet
       boolean ok=dout.mkdir();
       System.err.println("SCRATCHDIR creation "+(ok?"succeeded":"failed")+": "+SCRATCHDIR);
     }
-    File fout=File.createTempFile(PREFIX,"_out.txt",dout);
-    PrintWriter fout_writer=new PrintWriter(new BufferedWriter(new FileWriter(fout,true)));
-    fout_writer.printf("mol_i,mol_smi,mol_name,scaf_smi,pScore,in_drug,advisory,substancesTested,substancesActive,assaysTested,assaysActive,samplesTested,samplesActive\n");
+    File fout=File.createTempFile(PREFIX, "_out.txt", dout);
+    PrintWriter fout_writer=new PrintWriter(new BufferedWriter(new FileWriter(fout, true)));
+    fout_writer.printf("mol_i, mol_smi, mol_name, scaf_smi, pScore, in_drug, advisory, substancesTested, substancesActive, assaysTested, assaysActive, samplesTested, samplesActive\n");
     String thtm="<TABLE BORDER>\n";
     thtm+=("<TR><TH></TH><TH>molecule</TH><TH>scaffold</TH><TH>pScore</TH><TH>InDrug</TH><TH>advisory</TH><TH>details</TH></TR>\n");
     int i_mol=0;
@@ -922,7 +923,7 @@ public class badapple_servlet extends HttpServlet
       boolean inDrug=false;
 
       String qsmiles=null;
-      try { qsmiles=MolExporter.exportToFormat(mol,"smiles:u,+a_gen"); } /// Aromatize so matching/highlighting works.
+      try { qsmiles=MolExporter.exportToFormat(mol, "smiles:u,+a_gen"); } /// Aromatize so matching/highlighting works.
       catch (IOException e) { qsmiles=params.getVal("smiles"); }
       if (params.isChecked("verbose"))
         errors.add("query: "+qsmiles);
@@ -984,17 +985,17 @@ public class badapple_servlet extends HttpServlet
         {
           ++i_scaf;
           String scafsmi=score.getSmiles();
-          Molecule mol_scaf=MolImporter.importMol(scafsmi,"smiles:");
+          Molecule mol_scaf=MolImporter.importMol(scafsmi, "smiles:");
           if (params.isChecked("verbose")) errors.add("scaffold: ["+score.getID()+"] "+scafsmi);
 
           // Depict qmol; highlight using scafsmi as smarts.  smilesmatch option allows "[nH]" to match.
-          String imghtm_mol=HtmUtils.Smi2ImgHtm(qsmiles,"&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi,"UTF-8"),
-		    depsz,(int)Math.floor(1.25f*depsz),
-		    MOL2IMG_SERVLETURL,true,4,"parent.formframe.go_zoom_smi2img");
+          String imghtm_mol=HtmUtils.Smi2ImgHtm(qsmiles, "&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi, "UTF-8"),
+		    depsz, (int)Math.floor(1.25f*depsz),
+		    MOL2IMG_SERVLETURL, true, 4, "parent.formframe.go_zoom_smi2img");
 
-          String imghtm_scaf=HtmUtils.Smi2ImgHtm(scafsmi,"&clearqprops=true",
-		    depsz,(int)Math.floor(1.25f*depsz),
-		    MOL2IMG_SERVLETURL,true,4,"parent.formframe.go_zoom_smi2img");
+          String imghtm_scaf=HtmUtils.Smi2ImgHtm(scafsmi, "&clearqprops=true",
+		    depsz, (int)Math.floor(1.25f*depsz),
+		    MOL2IMG_SERVLETURL, true, 4, "parent.formframe.go_zoom_smi2img");
       
           Float pscore=score.getScore();
           String bgcolor_scaf;
@@ -1055,9 +1056,9 @@ public class badapple_servlet extends HttpServlet
 
           // Output CSV: 1 line per scaffold.
           fout_writer.printf(""+i_mol);
-          fout_writer.printf(",\""+MolExporter.exportToFormat(mol,"smiles:")+"\"");
+          fout_writer.printf(",\""+MolExporter.exportToFormat(mol, "smiles:")+"\"");
           fout_writer.printf(",\""+mol.getName()+"\"");
-          fout_writer.printf(",\""+MolExporter.exportToFormat(mol_scaf,"smiles:")+"\"");
+          fout_writer.printf(",\""+MolExporter.exportToFormat(mol_scaf, "smiles:")+"\"");
           fout_writer.printf(","+((pscore==null)?0:pscore.intValue()));
           fout_writer.printf(","+(score.getInDrug()));
           fout_writer.printf(",\""+advisory+"\"");
@@ -1360,7 +1361,7 @@ public class badapple_servlet extends HttpServlet
 
     /// Initialize persistent connection once per instantiation.
     try {
-      DBCON = new DBCon(DBTYPE,DBHOST,DBPORT,DBNAME,DBUSR,DBPW);
+      DBCON = new DBCon(DBTYPE, DBHOST, DBPORT, DBNAME, DBUSR, DBPW);
     }
     catch (Exception e)
     {
@@ -1383,11 +1384,13 @@ public class badapple_servlet extends HttpServlet
       "<TR BGCOLOR=\""+colorred+"\"><TD>&gt;"+PSCORE_CUTOFF_HIGH+"</TD>\n"+
       "<TD>high pScore; strong indication of promiscuity</TD></TR>\n"+
       "</TABLE>\n";
+
+    PROXY_PREFIX=((conf.getInitParameter("PROXY_PREFIX")!=null)?conf.getInitParameter("PROXY_PREFIX"):"");
   }
   /////////////////////////////////////////////////////////////////////////////
-  public void doGet(HttpServletRequest request,HttpServletResponse response)
-      throws IOException,ServletException
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws IOException, ServletException
   {
-    doPost(request,response);
+    doPost(request, response);
   }
 }
