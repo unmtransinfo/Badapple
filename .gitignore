@@ -1,4 +1,6 @@
+target/
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+**/.chemaxon/license.cxl
