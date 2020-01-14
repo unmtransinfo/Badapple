@@ -42,6 +42,8 @@
       <param-value>100</param-value> </init-param>
     <init-param> <param-name>PSCORE_CUTOFF_HIGH</param-name>
       <param-value>300</param-value> </init-param>
+    <init-param> <param-name>PROXY_PREFIX</param-name>
+      <param-value>/tomcat</param-value> </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>badapple</servlet-name>

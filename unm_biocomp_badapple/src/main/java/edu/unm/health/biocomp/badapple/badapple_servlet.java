@@ -110,7 +110,7 @@ public class badapple_servlet extends HttpServlet
 
     // main logic:
     ArrayList<String> cssincludes = new ArrayList<String>(Arrays.asList(PROXY_PREFIX+CONTEXTPATH+"/css/biocomp.css"));
-    ArrayList<String> jsincludes = new ArrayList<String>(Arrays.asList(PROXY_PREFIX+CONTEXTPATH+"/js/biocomp.js",PROXY_PREFIX+CONTEXTPATH+"/js/ddtip.js"));
+    ArrayList<String> jsincludes = new ArrayList<String>(Arrays.asList(PROXY_PREFIX+CONTEXTPATH+"/js/biocomp.js", PROXY_PREFIX+CONTEXTPATH+"/js/ddtip.js"));
     if (mrequest!=null)		//method=POST, normal operation
     {
       boolean ok=initialize(request, mrequest, response);
@@ -1325,8 +1325,8 @@ public class badapple_servlet extends HttpServlet
   public void init(ServletConfig conf) throws ServletException
   {
     super.init(conf);
-    CONTEXT=getServletContext();
-    CONTEXTPATH=CONTEXT.getContextPath();
+    CONTEXT = getServletContext();
+    CONTEXTPATH = CONTEXT.getContextPath();
 
     try { APPNAME=conf.getInitParameter("APPNAME"); }
     catch (Exception e) { APPNAME=this.getServletName(); }
