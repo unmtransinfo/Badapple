@@ -85,36 +85,15 @@ psql -d $DBNAME -c "COMMENT ON TABLE ${SCHEMA}.compound IS 'From ${PREFIX}_compo
 #############################################################################
 ### Step 3c) RDKit configuration.
 #############################################################################
-### Fails with rdkit-Release_2016_03_1 and some Boost versions.
-### Fails with rdkit-Release_2017_03_1 and some Boost versions.
 ### Works with rdkit-Release_2015_03_1 + Boost 1.60.0-4.9 on OpenSUSE Tumbleweed
+### Works with rdkit-Release_2019_09_03 + Boost ? on Ubuntu 18.04-LTS
 #############################################################################
 #
 sudo -u postgres psql -d $DBNAME -c 'CREATE EXTENSION rdkit'
-#
 ### Create mols table for RDKit structural searching.
-psql -d $DBNAME <<__EOF__
-SELECT
-	cid,
-	mol
-INTO
-	${SCHEMA}.mols
-FROM
-	(SELECT
-		cid,
-		mol_from_smiles(regexp_replace(isosmi,E'\\\\s+.*$','')::cstring) AS mol
-	FROM
-		${SCHEMA}.compound
-	) t
-WHERE
-	mol IS NOT NULL
-	;
-__EOF__
-#
+psql -d $DBNAME -f sql/create_rdkit_mols_table.sql
 psql -d $DBNAME -c "COMMENT ON TABLE ${SCHEMA}.mols IS 'For RDKit structural searching.'"
 psql -d $DBNAME -c "CREATE INDEX molidx ON ${SCHEMA}.mols USING gist(mol)"
-#
-#Canonical SMILES needed.
 psql -d $DBNAME -c "UPDATE ${SCHEMA}.compound SET cansmi = mol_to_smiles(mols.mol) FROM ${SCHEMA}.mols WHERE compound.cid = mols.cid"
 #
 #############################################################################
@@ -147,32 +126,11 @@ psql -d $DBNAME -c "COMMENT ON TABLE ${SCHEMA}.activity IS 'From: PubChem-FTP, p
 ### previously by JChem during scaffold analysis process.  Must be consistent
 ### between query and db.
 ###
-### OpenChord:
-#psql -q -d $DBNAME -c "UPDATE ${SCHEMA}.scaffold SET scafsmi = openbabel.cansmiles(scafsmi)"
-#
 ### RDKit:
 ### Create mols_scaf table for RDKit structural searching.
-psql -d $DBNAME <<__EOF__
-SELECT
-	id,
-	scafmol
-INTO
-	${SCHEMA}.mols_scaf
-FROM
-	(SELECT
-		id,
-		mol_from_smiles(regexp_replace(scafsmi,E'\\\\s+.*$','')::cstring) AS scafmol
-	FROM
-		${SCHEMA}.scaffold
-	) t
-WHERE
-	scafmol IS NOT NULL
-	;
-__EOF__
-#
+psql -d $DBNAME -f sql/create_rdkit_mols_scaf_table.sql
 psql -d $DBNAME -c "COMMENT ON TABLE ${SCHEMA}.mols_scaf IS 'For RDKit structural searching.'"
-psql -d $DBNAME -c "CREATE INDEX molidx ON ${SCHEMA}.mols_scaf USING gist(scafmol)"
-#
+psql -d $DBNAME -c "CREATE INDEX molscafidx ON ${SCHEMA}.mols_scaf USING gist(scafmol)"
 psql -q -d $DBNAME -c "UPDATE ${SCHEMA}.scaffold SET scafsmi = mol_to_smiles(mols_scaf.scafmol) FROM mols_scaf WHERE mols_scaf.id = scaffold.id"
 #
 #############################################################################
