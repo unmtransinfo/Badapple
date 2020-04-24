@@ -58,3 +58,7 @@ CA, Sklar LA, Oprea TI Bologa CG, J. Cheminfo. 8:29 (2016), DOI: 10.1186/s13321-
 * See [Badapple Formula](/doc/badapple_formula.html)
 
 <img align="center" src="/doc/images/badapple_formula.png">
+
+## Docker
+
+* Docker container based on Ubuntu 18.04-LTS.

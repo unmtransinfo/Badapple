@@ -1,5 +1,5 @@
 #
-FROM ubuntu:18.10
+FROM ubuntu:18.04
 WORKDIR /home/app
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
