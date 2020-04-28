@@ -2,13 +2,18 @@
 ###
 set -e
 #
-sudo docker version
+if [ $(whoami) != "root" ]; then
+	echo "${0} should be run as root or via sudo."
+	exit
+fi
+#
+docker version
 #
 INAME="badapple"
 CNAME="${INAME}_container"
 #
 ###
 # Build image from Dockerfile.
-sudo docker build -t ${INAME} .
-sudo docker images
+docker build -t ${INAME} .
+docker images
 #
