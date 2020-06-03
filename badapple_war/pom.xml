@@ -20,6 +20,12 @@
       <artifactId>unm_biocomp_badapple</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+
+    <dependency> <!-- (But how to reference jquery.js?) -->
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery</artifactId>
+      <version>3.5.1</version>
+    </dependency>
   </dependencies>
   
   <build>
