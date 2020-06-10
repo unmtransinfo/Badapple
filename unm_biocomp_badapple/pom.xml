@@ -70,6 +70,12 @@
     </dependency>
 
     <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.4</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.servlets</groupId>
       <artifactId>cos</artifactId>
       <version>05Nov2002</version>

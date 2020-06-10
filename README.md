@@ -49,6 +49,12 @@ mvn --projects badapple_war jetty:run
 mvn exec:java -Dexec.mainClass="edu.unm.health.biocomp.badapple.badapple"
 ```
 
+Or:
+
+```
+java -jar unm_biocomp_badapple-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+```
+
 Developed at the [UNM Translational Informatics Division](http://datascience.unm.edu).
 
 * [Public web app](http://pasilla.health.unm.edu/badapple)

@@ -5,13 +5,17 @@ import java.util.*;
 import java.sql.*;
 import java.text.DateFormat;
 
+import org.apache.commons.cli.*; // CommandLine, CommandLineParser, HelpFormatter, OptionBuilder, Options, ParseException, PosixParser
+import org.apache.commons.cli.Option.*; // Builder
+
 import chemaxon.struc.*;
 import chemaxon.formats.*;
 import chemaxon.marvin.io.*;
 
-import edu.unm.health.biocomp.util.db.*; // DBCon, pg_utils, mysql_utils, derby_utils
 import edu.unm.health.biocomp.hscaf.*;
-import edu.unm.health.biocomp.util.time_utils;
+import edu.unm.health.biocomp.util.db.*; // DBCon, pg_utils, mysql_utils, derby_utils
+import edu.unm.health.biocomp.util.*; // time_utils
+import edu.unm.health.biocomp.util.jre.*;
 
 /**	Command line application for Badapple system.
 	<br>
@@ -34,9 +38,9 @@ import edu.unm.health.biocomp.util.time_utils;
 */
 public class badapple
 {
+  private static String APPNAME="BADAPPLE";
   private static String dbhost="localhost";
   private static Integer dbport=5432; //PostgreSql default
-  //private static Integer dbport=3306; //MySql default
   private static String dbname="badapple";
   private static String dbdir="/tmp";
   private static String dbschema="public";
@@ -44,51 +48,9 @@ public class badapple
   private static String dbpw="foobar";
   private static String dbtype="postgres";
   private static String chemkit="rdkit";
-  private static int maxatoms=50;
-  private static int maxrings=5;
-
-  private static void Help(String msg)
-  {
-    System.err.println(msg+"\n"
-      +"badapple - command line app for Badapple system\n"
-      +"\n"
-      +"From the UNM Translational Informatics Division\n"
-      +"\n"
-      +"usage: badapple [options]\n"
-      +"\n"
-      +"  operations (one of):\n"
-      +"    -describe ................. describe db\n"
-      +"    -describescaf ............. describe scaf: mols, stats\n"
-      +"    -process_mols ............. process input molecules\n"
-      +"\n"
-      +"  i/o:\n"
-      +"    -i IFILE .................. input molecules\n"
-      +"    -o OFILE .................. output molecules, w/ scores\n"
-      +"    -scafid ID ................ scaf ID\n"
-      +"\n"
-      +"  options:\n"
-      +"    -dbtype DBTYPE ............ db type (postgres|mysql|derby) ["+dbtype+"]\n"
-      +"    -chemkit CHEMKIT .......... chemical cartridge (rdkit|openchord) ["+chemkit+"]\n"
-      +"    -dbhost DBHOST ............ db host ["+dbhost+"]\n"
-      +"    -dbport DBPORT ............ db port ["+dbport+"]\n"
-      +"    -dbdir DBDIR .............. db dir (Derby only) ["+dbdir+"]\n"
-      +"    -dbname DBNAME ............ db name ["+dbname+"]\n"
-      +"    -dbschema DBSCHEMA ........ db schema ["+dbschema+"] (postgres)\n"
-      +"    -dbusr DBUSR .............. db user ["+dbusr+"]\n"
-      +"    -dbpw DBPW ................ db password\n"
-      +"    -maxatoms MAX ............. max atom count of input mol ["+maxatoms+"]\n"
-      +"    -maxrings MAX ............. max ring count of input mol ["+maxrings+"]\n"
-      +"    -nmax NMAX ................ quit after NMAX molecules\n"
-      +"    -nskip NSKIP .............. skip NSKIP molecules\n"
-      +"    -scafid_min MIN ........... min scaf ID to calculate/annotate\n"
-      +"    -scafid_max MAX ........... max scaf ID to calculate/annotate\n"
-      +"    -v[v[v]] .................. verbose [very [very]]\n"
-      +"    -h ........................ this help\n"
-      +"\n"
-      );
-    System.exit(1);
-  }
-  private static int verbose=0;
+  private static Integer maxatoms=50;
+  private static Integer maxrings=5;
+  private static Integer verbose=0;
   private static String smifmt="cxsmiles:u-L-l-e-d-D-p-R-f-w";
   private static String ifile=null;
   private static String ofile=null;
@@ -97,54 +59,88 @@ public class badapple
   private static Boolean describescaf=false;
   private static Boolean process_mols=false;
   private static Integer scafid=null;
-  private static int nmax=0;
-  private static int nskip=0;
+  private static Integer nmax=0;
+  private static Integer nskip=0;
   private static Long scafid_min=null;
   private static Long scafid_max=null;
 
   /////////////////////////////////////////////////////////////////////////////
-  private static void ParseCommand(String args[])
+  public static void main(String[] args) throws Exception
   {
-    for (int i=0;i<args.length;++i)
-    {
-      if (args[i].equals("-i")) ifile=args[++i];
-      else if (args[i].equals("-o")) ofile=args[++i];
-      else if (args[i].equals("-dbhost")) dbhost=args[++i];
-      else if (args[i].equals("-dbport")) dbport=Integer.parseInt(args[++i]);
-      else if (args[i].equals("-dbname")) dbname=args[++i];
-      else if (args[i].equals("-dbdir")) dbdir=args[++i];
-      else if (args[i].equals("-dbschema")) dbschema=args[++i];
-      else if (args[i].equals("-dbusr")) dbusr=args[++i];
-      else if (args[i].equals("-dbpw")) dbpw=args[++i];
-      else if (args[i].equals("-dbtype")) dbtype=args[++i];
-      else if (args[i].equals("-chemkit")) chemkit=args[++i];
-      else if (args[i].equals("-describe")) describe=true;
-      else if (args[i].equals("-describescaf")) describescaf=true;
-      else if (args[i].equals("-process_mols")) process_mols=true;
-      else if (args[i].equals("-scafid")) scafid=Integer.parseInt(args[++i]);
-      else if (args[i].equals("-maxatoms")) maxatoms=Integer.parseInt(args[++i]);
-      else if (args[i].equals("-maxrings")) maxrings=Integer.parseInt(args[++i]);
-      else if (args[i].equals("-nmax")) nmax=Integer.parseInt(args[++i]);
-      else if (args[i].equals("-nskip")) nskip=Integer.parseInt(args[++i]);
-      else if (args[i].equals("-scafid_min")) scafid_min=Long.parseLong(args[++i]);
-      else if (args[i].equals("-scafid_max")) scafid_max=Long.parseLong(args[++i]);
-      else if (args[i].equals("-v")) verbose=1;
-      else if (args[i].equals("-vv")) verbose=2;
-      else if (args[i].equals("-vvv") || args[i].equals("-debug")) verbose=3;
-      else if (args[i].equals("-h")) Help("");
-      else Help("Unknown option: "+args[i]);
+    String HELPHEADER = "BADAPPLE - command line app for Badapple system";
+    String HELPFOOTER = "From the UNM Translational Informatics Division";
+    Options opts = new Options();
+    opts.addOption(Option.builder("i").required().hasArg().argName("IFILE").desc("input molecules").build());
+    opts.addOption(Option.builder("o").hasArg().argName("OFILE").desc("output molecules, w/ scores").build());
+    opts.addOption(Option.builder("describe").desc("describe db").build());
+    opts.addOption(Option.builder("describescaf").desc("describe scaf: mols, stats").build());
+    opts.addOption(Option.builder("process_mols").desc("process input molecules").build());
+    opts.addOption(Option.builder("scafid").hasArg().argName("ID").desc("scaf ID").build());
+    opts.addOption(Option.builder("dbtype").hasArg().argName("DBTYPE").desc("db type (postgres|mysql|derby) ["+dbtype+"]").build());
+    opts.addOption(Option.builder("chemkit").hasArg().argName("CHEMKIT").desc("chemical cartridge (rdkit|openchord) ["+chemkit+"]").build());
+    opts.addOption(Option.builder("dbhost").hasArg().argName("DBHOST").desc("db host ["+dbhost+"]").build());
+    opts.addOption(Option.builder("dbdir").hasArg().argName("DBDIR").desc("db dir (Derby only) ["+dbdir+"]").build());
+    opts.addOption(Option.builder("dbname").hasArg().argName("DBNAME").desc("db name ["+dbname+"]").build());
+    opts.addOption(Option.builder("dbschema").hasArg().argName("DBSCHEMA").desc("db schema ["+dbschema+"] (postgres)").build());
+    opts.addOption(Option.builder("dbusr").hasArg().argName("DBUSR").desc("db user ["+dbusr+"]").build());
+    opts.addOption(Option.builder("dbpw").hasArg().argName("DBPW").desc("db password").build());
+    opts.addOption(Option.builder("dbport").type(Integer.class).hasArg().argName("DBPORT").desc("db port ["+dbport+"]").build());
+    opts.addOption(Option.builder("maxatoms").type(Integer.class).hasArg().argName("MAXATOMS").desc("max atom count of input mol ["+maxatoms+"]").build());
+    opts.addOption(Option.builder("maxrings").type(Integer.class).hasArg().argName("MAXRINGS").desc("max ring count of input mol ["+maxrings+"]").build());
+    opts.addOption(Option.builder("nmax").type(Integer.class).hasArg().argName("NMAX").desc("quit after NMAX molecules").build());
+    opts.addOption(Option.builder("nskip").type(Integer.class).hasArg().argName("NSKIP").desc("skip NSKIP molecules").build());
+    opts.addOption(Option.builder("scafid_min").argName("SCAFID_MIN").desc("min scaf ID to calculate/annotate").build());
+    opts.addOption(Option.builder("scafid_max").argName("SCAFID_MAX").desc("max scaf ID to calculate/annotate").build());
+
+    opts.addOption("v", "verbose", false, "Verbose.");
+    opts.addOption("vv", "vverbose", false, "Very verbose.");
+    opts.addOption("vvv", "vvverbose", false, "Very very verbose.");
+    opts.addOption("h", "help", false, "Show this help.");
+    HelpFormatter helper = new HelpFormatter();
+    CommandLineParser clip = new PosixParser();
+    CommandLine clic = null;
+    try {
+      clic = clip.parse(opts, args);
+    } catch (ParseException e) {
+      helper.printHelp(APPNAME, HELPHEADER, opts, e.getMessage(), true);
+      System.exit(0);
     }
-  }
-  /////////////////////////////////////////////////////////////////////////////
-  public static void main(String[] args)
-    throws IOException,SQLException
-  {
-    ParseCommand(args);
+    ifile = clic.getOptionValue("i");
+    if (clic.hasOption("o")) ofile = clic.getOptionValue("o");
+    if (clic.hasOption("dbhost")) dbhost = clic.getOptionValue("dbhost");
+    if (clic.hasOption("dbname")) dbname = clic.getOptionValue("dbname");
+    if (clic.hasOption("dbschema")) dbschema = clic.getOptionValue("dbschema");
+    if (clic.hasOption("dbusr")) dbusr = clic.getOptionValue("dbusr");
+    if (clic.hasOption("dbpw")) dbpw = clic.getOptionValue("dbpw");
+    if (clic.hasOption("dbdir")) dbdir = clic.getOptionValue("dbdir");
+    if (clic.hasOption("dbport")) dbport = (Integer)(clic.getParsedOptionValue("dbport"));
+    if (clic.hasOption("chemkit")) chemkit = clic.getOptionValue("chemkit");
+    if (clic.hasOption("dbtype")) dbtype = clic.getOptionValue("dbtype");
+    if (clic.hasOption("maxrings")) maxrings = (Integer)(clic.getParsedOptionValue("maxrings"));
+    if (clic.hasOption("maxatoms")) maxatoms = (Integer)(clic.getParsedOptionValue("maxatoms"));
+    if (clic.hasOption("nmax")) nmax = (Integer)(clic.getParsedOptionValue("nmax"));
+    if (clic.hasOption("nskip")) nskip = (Integer)(clic.getParsedOptionValue("nskip"));
+    if (clic.hasOption("scafid")) scafid = (Integer)(clic.getParsedOptionValue("scafid"));
+    if (clic.hasOption("scafid_min")) scafid_min = (Long)(clic.getParsedOptionValue("scafid_min"));
+    if (clic.hasOption("scafid_max")) scafid_max = (Long)(clic.getParsedOptionValue("scafid_max"));
+    if (clic.hasOption("describe")) describe = true;
+    if (clic.hasOption("describescaf")) describescaf = true;
+    if (clic.hasOption("process_mols")) process_mols = true;
+    if (clic.hasOption("vvv")) verbose = 3;
+    else if (clic.hasOption("vv")) verbose = 2;
+    else if (clic.hasOption("v")) verbose = 1;
+    if (clic.hasOption("h")) {
+      helper.printHelp(APPNAME, HELPHEADER, opts, "", true);
+      System.exit(0);
+    }
+
+    if (verbose>0) System.err.println("JRE_VERSION: "+JREUtils.JREVersion());
 
     MolImporter molReader=null;
     if (ifile!=null)
     {
-      if (!(new File(ifile).exists())) Help("Non-existent input file: "+ifile);
+      if (!(new File(ifile).exists())) 
+      helper.printHelp(APPNAME, HELPHEADER, opts, ("Non-existent input file: "+ifile), true);
       molReader = new MolImporter(ifile);
     }
 
@@ -166,18 +162,19 @@ public class badapple
         System.err.println("Warning: non-standard "+dbtype+" port: "+dbport+" (normally 5432).");
       else if (dbtype.equals("mysql") && dbport!=3306)
         System.err.println("Warning: non-standard "+dbtype+" port: "+dbport+" (normally 3306).");
-      //System.err.println("JChem version: "+chemaxon.jchem.version.VersionInfo.JCHEM_VERSION); //pre-v6.3
       System.err.println("JChem version: "+com.chemaxon.version.VersionInfo.getVersion());
     }
    
     DBCon dbcon = null;
     try { dbcon = new DBCon(dbtype,dbhost,dbport,dbname_full,dbusr,dbpw); }
-    catch (Exception e) { Help("DB ("+dbtype+") error; "+e.getMessage()); }
-
-    if (dbcon==null)
-      Help("DB ("+dbtype+") connection failed.");
-    else if (verbose>0)
-    {
+    catch (Exception e) {
+      helper.printHelp(APPNAME, HELPHEADER, opts, ("DB ("+dbtype+") error; "+e.getMessage()), true);
+      System.exit(0);
+    }
+    if (dbcon==null) {
+      helper.printHelp(APPNAME, HELPHEADER, opts, ("DB ("+dbtype+") connection failed."), true);
+      System.exit(0);
+    } else if (verbose>0) {
       System.err.println("DB ("+dbtype+") connection ok :"+(dbtype.equals("derby")?"":(dbhost+":"+dbport+":"))+dbname_full);
       if (verbose>1) System.err.println(dbcon.serverStatusTxt());
     }
@@ -191,23 +188,24 @@ public class badapple
       }
       else if (describescaf)
       {
-        if (scafid==null) Help("ERROR: -scafid ID required for -describescaf.");
+        if (scafid==null) 
+          helper.printHelp(APPNAME, HELPHEADER, opts, ("ERROR: -scafid ID required for -describescaf."), true);
         System.out.println("database: "+dbname_full+"\nScafID: "+describescaf);
         System.out.println(badapple_utils.ScaffoldDescribeTxt(dbcon,dbschema,chemkit,scafid,verbose));
       }
       else if (process_mols)
       {
-        if (molReader==null) Help("ERROR: -i IFILE required for -process_mols.");
+        if (molReader==null)
+          helper.printHelp(APPNAME, HELPHEADER, opts, ("ERROR: -i IFILE required for -process_mols."), true);
         //System.err.println("DEBUG: nskip="+nskip+" ; nmax="+nmax);
         badapple_utils.ProcessMols(dbcon,dbschema,chemkit,molReader,molWriter,nskip,nmax,maxatoms,maxrings,verbose);
       }
       else
       {
-        Help("ERROR: no operation specified.");
+        helper.printHelp(APPNAME, HELPHEADER, opts, ("ERROR: no operation specified."), true);
       }
     }
     catch (Exception e) { System.err.println("DB ("+dbtype+") error; "+e.getMessage()); }
-
     System.exit(0);
   }
 }
