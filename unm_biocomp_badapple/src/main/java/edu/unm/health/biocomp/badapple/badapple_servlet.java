@@ -57,7 +57,6 @@ public class badapple_servlet extends HttpServlet
   private static Integer PSCORE_CUTOFF_MODERATE=null;	// configured in web.xml
   private static Integer PSCORE_CUTOFF_HIGH=null;	// configured in web.xml
   private static Boolean DEBUG=false;	// configured in web.xml
-  private static String LOGDIR=null;	// configured in web.xml
   private static String PREFIX=null;
   private static String SERVLETNAME=null;
   private static int scratch_retire_sec=3600;
@@ -71,7 +70,6 @@ public class badapple_servlet extends HttpServlet
   private static String DATESTR=null;
   private static String color1="#F0A555";
   private static String color2="#EEEEEE";
-  private static File LOGFILE=null;
   private static DBCon DBCON=null;
   private static ArrayList<Molecule> molsDB=null;
   private static int depsz=90;
@@ -158,11 +156,6 @@ public class badapple_servlet extends HttpServlet
         closeDoc(out, "outframe");
         closeDoc(out, "msgframe");
         out.println("</BODY></HTML>");
-        if (LOGFILE!=null) {
-          PrintWriter out_log = new PrintWriter(new BufferedWriter(new FileWriter(LOGFILE, true)));
-          out_log.printf("%s\t%s\t%d\n", DATESTR, REMOTEHOST, n_mol);
-          out_log.close();
-        }
         HtmUtils.PurgeScratchDirs(Arrays.asList(SCRATCHDIR), scratch_retire_sec, params.isChecked("verbose"), ".", (HttpServlet) this);
       }
     }
@@ -394,71 +387,6 @@ public class badapple_servlet extends HttpServlet
     DATESTR = String.format("%04d%02d%02d%02d%02d%02d", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
     Random rand = new Random();
     PREFIX = SERVLETNAME+"."+DATESTR+"."+String.format("%03d", rand.nextInt(1000));
-
-    //Create webapp-specific log dir if necessary:
-    File dout = new File(LOGDIR);
-    if (!dout.exists())
-    {
-      boolean ok = dout.mkdir();
-      System.err.println("LOGDIR creation "+(ok?"succeeded":"failed")+": "+LOGDIR);
-      if (!ok)
-      {
-        errors.add("ERROR: could not create LOGDIR (logging disabled): "+LOGDIR);
-        return false;
-      }
-    }
-    LOGFILE = new File(LOGDIR+"/"+SERVLETNAME+".log");
-    if (!LOGFILE.exists())
-    {
-      try {
-        LOGFILE.createNewFile();
-        LOGFILE.setWritable(true, true);
-        PrintWriter out_log = new PrintWriter(LOGFILE);
-        out_log.println("date\tip\tNrows"); 
-        out_log.flush();
-        out_log.close();
-      }
-      catch (Exception e) {
-        errors.add("ERROR: could not create LOGFILE (logging disabled): "+e.getMessage());
-        LOGFILE = null;
-      }
-    }
-    else if (!LOGFILE.canWrite())
-    {
-      errors.add("ERROR: LOGFILE not writable.");
-      LOGFILE = null;
-    }
-    if (LOGFILE!=null) {
-      BufferedReader buff = new BufferedReader(new FileReader(LOGFILE));
-      if (buff==null)
-      {
-        errors.add("ERROR: Cannot open LOGFILE (logging disabled).");
-        LOGFILE = null;
-      }
-      else
-      {
-        int n_lines=0;
-        String line=null;
-        String startdate=null;
-        while ((line=buff.readLine())!=null)
-        {
-          ++n_lines;
-          String[] fields = Pattern.compile("\\t").split(line);
-          if (n_lines==2) startdate = fields[0];
-        }
-        buff.close(); //Else can result in error: "Too many open files"
-        if (n_lines>2)
-        {
-          calendar.set(Integer.parseInt(startdate.substring(0, 4)),
-                   Integer.parseInt(startdate.substring(4, 6))-1,
-                   Integer.parseInt(startdate.substring(6, 8)),
-                   Integer.parseInt(startdate.substring(8, 10)),
-                   Integer.parseInt(startdate.substring(10, 12)), 0);
-          DateFormat df = DateFormat.getDateInstance(DateFormat.FULL, Locale.US);
-          errors.add("since "+df.format(calendar.getTime())+", times used: "+(n_lines-1));
-        }
-      }
-    }
 
     try {
       LicenseManager.setLicenseFile(CONTEXT.getRealPath("")+"/.chemaxon/license.cxl");
@@ -1334,8 +1262,6 @@ public class badapple_servlet extends HttpServlet
     if (UPLOADDIR==null) throw new ServletException("ERROR: UPLOADDIR parameter required.");
     SCRATCHDIR=conf.getInitParameter("SCRATCHDIR");
     if (SCRATCHDIR==null) throw new ServletException("ERROR: SCRATCHDIR parameter required.");
-    LOGDIR=conf.getInitParameter("LOGDIR");
-    if (LOGDIR==null) LOGDIR="/tmp"+CONTEXTPATH+"_logs";
     DBTYPE=conf.getInitParameter("DBTYPE");
     if (DBTYPE==null) throw new ServletException("ERROR: DBTYPE parameter required.");
     DBNAME=conf.getInitParameter("DBNAME");

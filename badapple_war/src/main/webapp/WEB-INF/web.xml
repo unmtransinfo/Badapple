@@ -15,8 +15,6 @@
       <param-value>/tmp</param-value> </init-param>
     <init-param> <param-name>SCRATCHDIR</param-name>
       <param-value>scratch</param-value></init-param>
-    <init-param> <param-name>LOGDIR</param-name>
-      <param-value>logs</param-value></init-param>
     <init-param> <param-name>N_MAX</param-name>
       <param-value>200</param-value> </init-param>
     <init-param> <param-name>DBTYPE</param-name>
@@ -75,8 +73,6 @@
       <param-value>HScaf</param-value> </init-param>
     <init-param> <param-name>UPLOADDIR</param-name>
       <param-value>/tmp</param-value> </init-param>
-    <init-param> <param-name>LOGDIR</param-name>
-      <param-value>${catalina.home}/logs</param-value></init-param>
     <init-param> <param-name>SCRATCHDIR</param-name>
       <param-value>${catalina.home}/webapps/biocomp/scratch</param-value></init-param>
     <init-param> <param-name>N_MAX</param-name>
