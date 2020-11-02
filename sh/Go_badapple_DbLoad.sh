@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #############################################################################
-### Go_badapple_LoadDB_pc.sh
+### Go_badapple_LoadDB.sh
 ### 
 ### PubChem version. PubChem activity associated with CIDs & AIDs.
 ### 
@@ -9,19 +9,14 @@
 ###
 ### Note: psql COPY requires superuser role.
 ### Do as postgres or grant and revoke privilege: 
-###	ALTER ROLE jjyang WITH SUPERUSER ;
-###	ALTER ROLE jjyang WITH NOSUPERUSER ;
-###
-### Jeremy Yang
-### 14 Aug 2017
+###	ALTER ROLE ${USER} WITH SUPERUSER ;
+###	ALTER ROLE ${USER} WITH NOSUPERUSER ;
 #############################################################################
 #
 set -x
 #
 DBNAME="badapple"
 DBHOST="localhost"
-DBUSR="jjyang"
-DBPW="assword"
 #
 SCHEMA="public"
 #
@@ -83,21 +78,7 @@ ${cwd}/python/compounds_2sql.py \
 psql -d $DBNAME -c "COMMENT ON TABLE ${SCHEMA}.compound IS 'From ${PREFIX}_compounds.smi via cpds_2sql.py, badapple_assaystats_db_annotate.py.'"
 #
 #############################################################################
-### Step 3c) RDKit configuration.
-#############################################################################
-### Works with rdkit-Release_2015_03_1 + Boost 1.60.0-4.9 on OpenSUSE Tumbleweed
-### Works with rdkit-Release_2019_09_03 + Boost ? on Ubuntu 18.04-LTS
-#############################################################################
-#
-sudo -u postgres psql -d $DBNAME -c 'CREATE EXTENSION rdkit'
-### Create mols table for RDKit structural searching.
-psql -d $DBNAME -f sql/create_rdkit_mols_table.sql
-psql -d $DBNAME -c "COMMENT ON TABLE ${SCHEMA}.mols IS 'For RDKit structural searching.'"
-psql -d $DBNAME -c "CREATE INDEX molidx ON ${SCHEMA}.mols USING gist(mol)"
-psql -d $DBNAME -c "UPDATE ${SCHEMA}.compound SET cansmi = mol_to_smiles(mols.mol) FROM ${SCHEMA}.mols WHERE compound.cid = mols.cid"
-#
-#############################################################################
-### Step 3d) Load CID to SID relations.
+### Step 3c) Load CID to SID relations.
 #
 csvfile=${DATADIR}/${PREFIX}_sid2cid.csv
 #
@@ -121,12 +102,26 @@ gunzip -c $gzcsvfile |sed -e '1d' |psql -d $DBNAME -c "COPY $SCHEMA.activity (ai
 psql -d $DBNAME -c "COMMENT ON TABLE ${SCHEMA}.activity IS 'From: PubChem-FTP, pubchem_ftp_assay_results.py, ${gzcsvfile}.'"
 #
 #############################################################################
-### Step 5) Canonicalize scaffold smiles.
+### RDKit:
+### Step 5) RDKit configuration.
+#############################################################################
+### Works with rdkit-Release_2019_09_03 + Boost ? on Ubuntu 18.04-LTS
+#############################################################################
+### Step 5a) compound -> mols.
+#
+sudo -u postgres psql -d $DBNAME -c 'CREATE EXTENSION rdkit'
+### Create mols table for RDKit structural searching.
+psql -d $DBNAME -f sql/create_rdkit_mols_table.sql
+psql -d $DBNAME -c "COMMENT ON TABLE ${SCHEMA}.mols IS 'For RDKit structural searching.'"
+psql -d $DBNAME -c "CREATE INDEX molidx ON ${SCHEMA}.mols USING gist(mol)"
+psql -d $DBNAME -c "UPDATE ${SCHEMA}.compound SET cansmi = mol_to_smiles(mols.mol) FROM ${SCHEMA}.mols WHERE compound.cid = mols.cid"
+#
+#############################################################################
+### Step 5b) Canonicalize scaffold smiles.
 ### For database use and efficiency, although the smiles were canonicalized
 ### previously by JChem during scaffold analysis process.  Must be consistent
 ### between query and db.
 ###
-### RDKit:
 ### Create mols_scaf table for RDKit structural searching.
 psql -d $DBNAME -f sql/create_rdkit_mols_scaf_table.sql
 psql -d $DBNAME -c "COMMENT ON TABLE ${SCHEMA}.mols_scaf IS 'For RDKit structural searching.'"
@@ -274,7 +269,7 @@ opts="-v -annotate_scaf"
 opts="$opts -dbtype postgres -dbport 5432"
 opts="$opts -dbname $DBNAME -dbschema $SCHEMA -dbusr $DBUSR -dbpw $DBPW"
 #
-badapple_scaf.sh $opts
+java -classpath ${cwd}/unm_biocomp_badapple/target/unm_biocomp_badapple-0.0.1-SNAPSHOT-jar-with-dependencies.jar edu.unm.health.biocomp.badapple.badapple_scaf $opts
 #
 #
 ### Step 12b) Annotate scaffold table with score rank, add column "prank".

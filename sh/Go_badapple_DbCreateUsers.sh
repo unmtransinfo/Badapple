@@ -14,13 +14,9 @@ DBSCHEMA="public"
 TABLES="scaffold compound sub2cpd scaf2cpd scaf2scaf activity metadata mols mols_scaf"
 #
 #############################################################################
-#USER="jjyang"
-#PW="assword"
-#
 #psql -u postgres -d $DBNAME "CREATE USER $USER WITH CREATEDB CREATEROLE LOGIN PASSWORD '$PW'"
 #psql -u postgres -d $DBNAME "GRANT CREATE ON DATABASE $DBNAME TO $USER"
 #psql -u postgres -d $DBNAME "GRANT CONNECT ON DATABASE $DBNAME TO $USER"
-#
 #############################################################################
 USER="www"
 PW="foobar"

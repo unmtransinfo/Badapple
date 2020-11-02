@@ -1,12 +1,8 @@
 #!/bin/sh
 #############################################################################
 ### GoHscaf_*.sh
-### 
-### Jeremy Yang
-### 11 Jan 2017
 #############################################################################
 #set -x
-#
 #
 IFILE=data/pc_mlsmr_compounds.smi
 #
@@ -16,11 +12,11 @@ OFILE_SCAF=${PREFIX}_hscaf_scaf.smi
 #
 DBHOST="localhost"
 DBPORT="5432"
-DBNAME="badapple2"
+DBNAME="badapple"
 DBSCHEMA="public"
 DBTABLEPREFIX=""
-DBUSER="jjyang"
-DBPW="assword"
+DBUSER="batman"
+DBPW="foobar"
 #
 createdb "$DBNAME"
 #
