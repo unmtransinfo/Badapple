@@ -16,7 +16,7 @@ if [ ! -e "${cwd}/data" ]; then
 	mkdir ${cwd}/data/
 fi
 #
-sudo -u postgres pg_dump --no-privileges -Fc -d badapple >/home/data/Badapple/badapple.pgdump 
+#sudo -u postgres pg_dump --no-privileges -Fc -d badapple >/home/data/Badapple/badapple.pgdump 
 cp /home/data/Badapple/badapple.pgdump ${cwd}/data/
 #
 T0=$(date +%s)
