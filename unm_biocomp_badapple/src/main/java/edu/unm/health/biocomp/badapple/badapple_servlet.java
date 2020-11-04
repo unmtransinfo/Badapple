@@ -107,8 +107,9 @@ public class badapple_servlet extends HttpServlet
     }
 
     // main logic:
-    ArrayList<String> cssincludes = new ArrayList<String>(Arrays.asList(PROXY_PREFIX+CONTEXTPATH+"/css/biocomp.css"));
-    ArrayList<String> jsincludes = new ArrayList<String>(Arrays.asList(PROXY_PREFIX+CONTEXTPATH+"/js/biocomp.js", PROXY_PREFIX+CONTEXTPATH+"/js/ddtip.js"));
+    ArrayList<String> cssincludes = new ArrayList<String>(Arrays.asList(((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/css/biocomp.css"));
+    ArrayList<String> jsincludes = new ArrayList<String>(Arrays.asList(((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/js/biocomp.js", ((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/js/ddtip.js"));
+
     if (mrequest!=null)		//method=POST, normal operation
     {
       boolean ok=initialize(request, mrequest, response);
@@ -241,34 +242,24 @@ public class badapple_servlet extends HttpServlet
         PrintFrame(out, "outframe", SCORE_RANGE_KEY);
 
         String logo_htm="<TABLE CELLSPACING=5 CELLPADDING=5><TR><TD>";
-        String imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
-
+        String imghtm=("<IMG BORDER=\"0\" SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
         String tiphtm=(APPNAME+" web app from UNM Translational Informatics.");
-        String href=("http://medicine.unm.edu/informatics/");
-        logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
-
+        String href=("http://datascience.unm.edu/");
+        logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white"));
         logo_htm+="</TD><TD>";
-        imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
+
+        imghtm=("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
         tiphtm=("JChem from ChemAxon Ltd.");
-        href=("http://www.chemaxon.com");
-        logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
-
+        href=("https://www.chemaxon.com");
+        logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white"));
         logo_htm+="</TD><TD>";
-        if (CHEMKIT.equalsIgnoreCase("openchord"))
-        {
-          imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/gNovalogo.png\">");
-          tiphtm=("OpenChord from gNova Inc.");
-          href=("http://www.gnova.com");
-        }
-        else if (CHEMKIT.equalsIgnoreCase("rdkit"))
-        {
-          imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/rdkit_logo.png\">");
-          tiphtm=("RDKit");
-          href=("http://www.rdkit.org");
-        }
+
+        imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/rdkit_logo.png\">");
+        tiphtm=("RDKit");
+        href=("http://www.rdkit.org");
         logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
 
-        imghtm=("<IMG BORDER=0 HEIGHT=\"40\" SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/JSME_logo.png\">");
+        imghtm=("<IMG BORDER=0 HEIGHT=\"40\" SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/JSME_logo.png\">");
         tiphtm=("JSME Molecular Editor");
         href=("http://peter-ertl.com/jsme/");
         logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
@@ -343,38 +334,28 @@ public class badapple_servlet extends HttpServlet
     out.println("</SCRIPT>");
   }
   /////////////////////////////////////////////////////////////////////////////
-  private boolean initialize(HttpServletRequest request, MultipartRequest mrequest,
-  	HttpServletResponse response)
+  private boolean initialize(HttpServletRequest request, MultipartRequest mrequest, HttpServletResponse response)
       throws IOException, ServletException
   {
-    SERVLETNAME=this.getServletName();
-    outputs=new ArrayList<String>();
-    errors=new ArrayList<String>();
-    params=new HttpParams();
+    SERVLETNAME = this.getServletName();
+    outputs = new ArrayList<String>();
+    errors = new ArrayList<String>();
+    params = new HttpParams();
 
     String logo_htm="<TABLE CELLSPACING=5 CELLPADDING=5><TR><TD>";
-    String imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
+    String imghtm=("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
 
     String tiphtm=(APPNAME+" web app from UNM Translational Informatics.");
     String href=("http://medicine.unm.edu/informatics/");
     logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD><TD>";
 
-    if (CHEMKIT.equalsIgnoreCase("openchord"))
-    {
-      imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/gNovalogo.png\">");
-      tiphtm=("OpenChord from gNova Inc.");
-      href=("http://www.gnova.com");
-    }
-    else if (CHEMKIT.equalsIgnoreCase("rdkit"))
-    {
-      imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/rdkit_logo.png\">");
-      tiphtm=("RDKit");
-      href=("http://www.rdkit.org");
-    }
+    imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/rdkit_logo.png\">");
+    tiphtm=("RDKit");
+    href=("http://www.rdkit.org");
     logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD><TD>";
-    imghtm=("<IMG BORDER=0 SRC=\""+PROXY_PREFIX+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
+    imghtm=("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
     tiphtm=("JChem and Marvin from ChemAxon Ltd.");
     href=("http://www.chemaxon.com");
     logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
@@ -394,13 +375,9 @@ public class badapple_servlet extends HttpServlet
       errors.add("ERROR: ChemAxon LicenseManager error: "+e.getMessage());
     }
     LicenseManager.refresh();
-    if (!LicenseManager.isLicensed(LicenseManager.JCHEM)) {
-      errors.add("ERROR: ChemAxon license not found.");
-      return false;
-    }
 
-    MOL2IMG_SERVLETURL = (PROXY_PREFIX+CONTEXTPATH+"/mol2img");
-    JSMEURL = (PROXY_PREFIX+CONTEXTPATH+"/jsme_win.html");
+    MOL2IMG_SERVLETURL = (((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/mol2img");
+    JSMEURL = (((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/jsme_win.html");
 
     if (DBCON==null)
     {
@@ -618,10 +595,7 @@ public class badapple_servlet extends HttpServlet
       " "+params.getVal("file2txtDB")+">file2txt<BR>\n"+
       "<TEXTAREA NAME=\"intxt\" WRAP=OFF ROWS=8 COLS=40>"+params.getVal("intxt")+"</TEXTAREA>\n");
 
-    //htm+=("or <BUTTON TYPE=BUTTON onClick=\"StartMarvin4JS()\">draw query...</BUTTON>\n");
-
-    htm+=("or <BUTTON TYPE=BUTTON onClick=\"StartJSME()\">JSME</BUTTON>\n");
-
+    htm+=("or <BUTTON TYPE=\"BUTTON\" onClick=\"StartJSME()\">JSME</BUTTON>\n");
 
     htm+=(
     "<HR>\n"+
@@ -1261,7 +1235,7 @@ public class badapple_servlet extends HttpServlet
     UPLOADDIR=conf.getInitParameter("UPLOADDIR");
     if (UPLOADDIR==null) throw new ServletException("ERROR: UPLOADDIR parameter required.");
     SCRATCHDIR=conf.getInitParameter("SCRATCHDIR");
-    if (SCRATCHDIR==null) throw new ServletException("ERROR: SCRATCHDIR parameter required.");
+    if (SCRATCHDIR==null) SCRATCHDIR="/tmp";
     DBTYPE=conf.getInitParameter("DBTYPE");
     if (DBTYPE==null) throw new ServletException("ERROR: DBTYPE parameter required.");
     DBNAME=conf.getInitParameter("DBNAME");
@@ -1294,17 +1268,10 @@ public class badapple_servlet extends HttpServlet
     catch (Exception e) { DEBUG=false; }
 
     /// Initialize persistent connection once per instantiation.
-    try {
-      DBCON = new DBCon(DBTYPE, DBHOST, DBPORT, DBNAME, DBUSR, DBPW);
-    }
-    catch (Exception e)
-    {
-      throw new ServletException("ERROR: DB ("+DBTYPE+") connection failed ("+DBUSR+"@"+DBHOST+"); <PRE>"+e.getMessage()+"</PRE>");
-    }
-    if (DBCON==null)
-      throw new ServletException("ERROR: DB ("+DBTYPE+") connection failed ("+DBUSR+"@"+DBHOST+").");
-    else
-      System.err.println("DEBUG: DB ("+DBTYPE+") connection ok ("+DBUSR+"@"+DBHOST+").");
+    try { DBCON = new DBCon(DBTYPE, DBHOST, DBPORT, DBNAME, DBUSR, DBPW); }
+    catch (Exception e) { throw new ServletException("ERROR: DB ("+DBTYPE+") connection failed ("+DBUSR+"@"+DBHOST+"); <PRE>"+e.getMessage()+"</PRE>"); }
+    if (DBCON==null) { throw new ServletException("ERROR: DB ("+DBTYPE+") connection failed ("+DBUSR+"@"+DBHOST+")."); }
+    else { System.err.println("DEBUG: DB ("+DBTYPE+") connection ok ("+DBUSR+"@"+DBHOST+")."); }
 
     SCORE_RANGE_KEY=
       "<TABLE BORDER>\n"+

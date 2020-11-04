@@ -1,5 +1,11 @@
 #!/bin/bash
 ###
+# Prerequisites:
+#  cp $HOME/.chemaxon/license.cxl badapple_war/src/main/webapp/.chemaxon/
+#  unzip $HOME/archives/JSME_2013-10-13.zip -d badapple_war/src/main/webapp
+#  mv badapple_war/src/main/webapp/JSME_2013-10-13 badapple_war/src/main/webapp/jsme 
+#  mvn clean install
+###
 cwd=$(pwd)
 #
 if [ $(whoami) != "root" ]; then

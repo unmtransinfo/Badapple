@@ -4,3 +4,4 @@ target/
 .RData
 .Ruserdata
 **/.chemaxon/license.cxl
+**/jsme/

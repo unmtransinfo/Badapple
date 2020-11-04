@@ -28,7 +28,7 @@ docker network ls
 #
 docker exec ${INAME_UI}_container ping -c 1 ${INAME_DB}_container
 #
-docker exec -it ${INAME_UI}_container psql -h ${INAME_DB}_container -d badapple -U batman -c "SELECT name,version FROM dataset"
+docker exec -it ${INAME_UI}_container psql -qA -h ${INAME_DB}_container -d badapple -U batman -c "SELECT db_description,db_date_built FROM metadata"
 #
 ###
 # If ok, app at: http://localhost:9092/badapple/badapple

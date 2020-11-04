@@ -23,7 +23,7 @@
     <init-param> <param-name>DBNAME</param-name>
       <param-value>badapple</param-value></init-param> <!-- postgres -->
     <init-param> <param-name>DBHOST</param-name>
-      <param-value>localhost</param-value></init-param>
+      <param-value>badapple_db_container</param-value></init-param>
     <init-param> <param-name>DBSCHEMA</param-name>
       <param-value>public</param-value></init-param> <!-- postgres -->
     <init-param> <param-name>CHEMKIT</param-name>
@@ -31,7 +31,7 @@
     <init-param> <param-name>DBPORT</param-name>
       <param-value>5432</param-value> </init-param>
     <init-param> <param-name>DBUSR</param-name>
-      <param-value>www</param-value> </init-param>
+      <param-value>batman</param-value> </init-param>
     <init-param> <param-name>DBPW</param-name>
       <param-value>foobar</param-value> </init-param>
     <init-param><param-name>MAX_POST_SIZE</param-name>
@@ -40,8 +40,6 @@
       <param-value>100</param-value> </init-param>
     <init-param> <param-name>PSCORE_CUTOFF_HIGH</param-name>
       <param-value>300</param-value> </init-param>
-    <init-param> <param-name>PROXY_PREFIX</param-name>
-      <param-value>/tomcat</param-value> </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>badapple</servlet-name>
@@ -73,8 +71,6 @@
       <param-value>HScaf</param-value> </init-param>
     <init-param> <param-name>UPLOADDIR</param-name>
       <param-value>/tmp</param-value> </init-param>
-    <init-param> <param-name>SCRATCHDIR</param-name>
-      <param-value>${catalina.home}/webapps/biocomp/scratch</param-value></init-param>
     <init-param> <param-name>N_MAX</param-name>
       <param-value>200</param-value> </init-param>
     <init-param><param-name>MAX_POST_SIZE</param-name>
