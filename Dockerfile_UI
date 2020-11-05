@@ -35,8 +35,9 @@ RUN echo "=== Done installing Tomcat."
 COPY badapple_war/target/badapple_war-0.0.1-SNAPSHOT.war /usr/share/tomcat9/webapps/badapple.war
 #RUN i=0; while [ ! -d /usr/share/tomcat9/webapps/badapple ]; do sleep 1; i=$(($i+1)); pr intf "%d. Waiting for auto-deploy...\n" "$i"; done
 RUN cd /usr/share/tomcat9/webapps; mkdir badapple; cd badapple; unzip ../badapple.war
+RUN mkdir -p /usr/share/tomcat9/webapps/badapple/.chemaxon
 RUN chown -R tomcat /usr/share/tomcat9/webapps/badapple
-RUN ls -laR /usr/share/tomcat9/webapps
+#RUN ls -laR /usr/share/tomcat9/webapps
 RUN echo "=== Done installing application CARLSBAD."
 #
 ###

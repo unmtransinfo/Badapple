@@ -50,6 +50,18 @@ APPPORT_UI=8080
 IMG_UI="${INAME_UI}:${VTAG}"
 docker run -dit --name "${INAME_UI}_container" -p ${DOCKERPORT_UI}:${APPPORT_UI} ${IMG_UI}
 #
+###
+# Install ChemAxon license.cxl
+docker exec ${INAME}_container mkdir -p /usr/share/tomcat9/webapps/carlsbad/.chemaxon
+LICFILE="~tomcat/.chemaxon/license.cxl"
+if [ -e "${LICFILE}" ]; then
+	docker cp ${LICFILE} ${INAME}_container:/usr/share/tomcat9/webapps/carlsbad/.chemaxon
+	docker exec chown -R tomcat /usr/share/tomcat9/webapps/carlsbad/.chemaxon
+else
+	printf "ERROR: ChemAxon license file not found: "${LICFILE}"\n"
+	printf "ChemAxon license file must be installed manually.\n"
+fi
+#
 docker container logs "${INAME_UI}_container"
 #
 ###
