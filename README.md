@@ -1,16 +1,20 @@
 # Badapple <img align="right" src="doc/images/BadappleWorm.png" height="80">
 
 Bioassay data associative promiscuity pattern learning engine. 
-Methods developed at UNM for for HTS analytics and hit prioritization.
-
 Badapple web app, utility apps, library, and project code.
+Methods developed at the [UNM Translational Informatics Division](http://datascience.unm.edu)
+for for HTS analytics and hit prioritization.
+
+* [Public web app](http://pasilla.health.unm.edu/badapple)
+* [Badapple: promiscuity patterns from noisy evidence , Yang et al., J. Cheminfo. 8:29 (2016)](http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0137-3).
+* See [Badapple Formula](/doc/badapple_formula.html)
 
 ## Dependencies
 
 * Java 8
 * Maven 3.5+
-* `unm_biocomp_hscaf.jar`, `unm_biocomp_db.jar`, `unm_biocomp_depict.jar`, `unm_biocomp_util.jar`
-* ChemAxon JChem (19.3.0 ok)
+* [`unm_biocomp_hscaf.jar`](https://github.com/unmtransinfo/unm_biocomp_hscaf), [`unm_biocomp_depict.jar`](https://github.com/unmtransinfo/unm_biocomp_depict), [`unm_biocomp_util.jar`](https://github.com/unmtransinfo/unm_biocomp_util)
+* ChemAxon JChem 19.3.0+
 * Access to [ChemAxon Maven repository](https://hub.chemaxon.com)
 (see [documentation](https://docs.chemaxon.com/display/docs/Public+Repository)).
 
@@ -55,16 +59,12 @@ Or:
 java -jar unm_biocomp_badapple-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 ```
 
-Developed at the [UNM Translational Informatics Division](http://datascience.unm.edu).
+## Docker
 
-* [Public web app](http://pasilla.health.unm.edu/badapple)
-* Badapple: promiscuity patterns from noisy evidence , Yang JJ, Ursu O, Lipinski
-CA, Sklar LA, Oprea TI Bologa CG, J. Cheminfo. 8:29 (2016), DOI: 10.1186/s13321-016-0137-3,
-<http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0137-3>.
-* See [Badapple Formula](/doc/badapple_formula.html)
+* Docker containers based on Ubuntu 20.04.
+* [`badapple_db`](https://hub.docker.com/repository/docker/unmtransinfo/badapple_db)
+* [`badapple_ui`](https://hub.docker.com/repository/docker/unmtransinfo/badapple_ui)
+* ChemAxon license must be installed into running `badapple_ui` container.
 
 <img align="center" src="/doc/images/badapple_formula.png">
 
-## Docker
-
-* Docker container based on Ubuntu 18.04-LTS.
