@@ -7,7 +7,7 @@ for for HTS analytics and hit prioritization.
 
 * [Public web app](http://pasilla.health.unm.edu/badapple)
 * [Badapple: promiscuity patterns from noisy evidence , Yang et al., J. Cheminfo. 8:29 (2016)](http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0137-3).
-* See [Badapple Formula](/doc/badapple_formula.html)
+* [Badapple Formula](/doc/images/badapple_formula.png)
 
 ## Dependencies
 
@@ -66,5 +66,4 @@ java -jar unm_biocomp_badapple-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 * [`badapple_ui`](https://hub.docker.com/repository/docker/unmtransinfo/badapple_ui)
 * ChemAxon license must be installed into running `badapple_ui` container.
 
-<img align="center" src="/doc/images/badapple_formula.png">
 
