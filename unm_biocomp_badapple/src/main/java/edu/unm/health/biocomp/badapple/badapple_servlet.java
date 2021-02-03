@@ -87,22 +87,22 @@ public class badapple_servlet extends HttpServlet
       throws IOException,ServletException
   {
     SERVERNAME=request.getServerName();
-    if (SERVERNAME.equals("localhost")) SERVERNAME=InetAddress.getLocalHost().getHostAddress();
-    REMOTEHOST=request.getHeader("X-Forwarded-For"); // client (original)
+    if (SERVERNAME.equals("localhost")) SERVERNAME = InetAddress.getLocalHost().getHostAddress();
+    REMOTEHOST = request.getHeader("X-Forwarded-For"); // client (original)
     if (REMOTEHOST!=null)
     {
-      String[] addrs=Pattern.compile(",").split(REMOTEHOST);
-      if (addrs.length>0) REMOTEHOST=addrs[addrs.length-1];
+      String[] addrs = Pattern.compile(",").split(REMOTEHOST);
+      if (addrs.length>0) REMOTEHOST = addrs[addrs.length-1];
     }
     else
     {
-      REMOTEHOST=request.getRemoteAddr(); // client (may be proxy)
+      REMOTEHOST = request.getRemoteAddr(); // client (may be proxy)
     }
-    RESOURCEBUNDLE=ResourceBundle.getBundle("LocalStrings",request.getLocale());
+    RESOURCEBUNDLE = ResourceBundle.getBundle("LocalStrings",request.getLocale());
     MultipartRequest mrequest=null;
     if (request.getMethod().equalsIgnoreCase("POST"))
     {
-      try { mrequest=new MultipartRequest(request,UPLOADDIR,MAX_POST_SIZE,"ISO-8859-1",new DefaultFileRenamePolicy()); }
+      try { mrequest = new MultipartRequest(request,UPLOADDIR,MAX_POST_SIZE,"ISO-8859-1",new DefaultFileRenamePolicy()); }
       catch (IOException lEx) { this.getServletContext().log("not a valid MultipartRequest",lEx); }
     }
 
@@ -112,10 +112,10 @@ public class badapple_servlet extends HttpServlet
 
     if (mrequest!=null)		//method=POST, normal operation
     {
-      boolean ok=initialize(request, mrequest, response);
+      boolean ok = initialize(request, mrequest, response);
       if (!ok)
       {
-        PrintWriter out=response.getWriter();
+        PrintWriter out = response.getWriter();
         response.setContentType("text/html");
         out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request));
         out.println(FormHtm(response));
@@ -129,7 +129,7 @@ public class badapple_servlet extends HttpServlet
       }
       else if (params.isChecked("gobad"))
       {
-        PrintWriter out=response.getWriter();
+        PrintWriter out = response.getWriter();
         response.setContentType("text/html");
         out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request));
         out.println(FormHtm(response));
@@ -137,19 +137,10 @@ public class badapple_servlet extends HttpServlet
         ClearFrame(out, "msgframe");
         Integer n_mol=0;
         Integer n_scaf=0;
-        long t0=System.currentTimeMillis();
-        //if (params.getVal("runmode").equals("multi"))
-        //{
-          n_mol=GoBadapple_Multi(molsDB, response);
-          if (n_mol>0) outputs.add(SCORE_RANGE_KEY);
-        //}
-        //else
-        //{
-        //  n_scaf = GoBadapple_Single(molsDB.get(0));
-        //  if (n_scaf>0) outputs.add(SCORE_RANGE_KEY);
-        //  n_mol=1;
-        //}
-        long t=System.currentTimeMillis()-t0;
+        long t0 = System.currentTimeMillis();
+        n_mol = GoBadapple_Multi(molsDB, response);
+        if (n_mol>0) outputs.add(SCORE_RANGE_KEY);
+        long t = System.currentTimeMillis()-t0;
         errors.add("elapsed query time: "+String.format("%.2f", (float)t/1000.0f)+"s");
         PrintFrame(out, "outframe", outputs);
         PrintFrame(out, "msgframe", errors);
@@ -162,11 +153,11 @@ public class badapple_servlet extends HttpServlet
     }
     else
     {
-      String downloadtxt=request.getParameter("downloadtxt"); // POST param
-      String downloadfile=request.getParameter("downloadfile"); // POST param
+      String downloadtxt = request.getParameter("downloadtxt"); // POST param
+      String downloadfile = request.getParameter("downloadfile"); // POST param
       if (request.getParameter("help")!=null)	// GET method
       {
-        PrintWriter out=response.getWriter();
+        PrintWriter out = response.getWriter();
         response.setContentType("text/html");
         out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color2, request));
         out.println(HelpHtm());
@@ -175,26 +166,26 @@ public class badapple_servlet extends HttpServlet
       else if (request.getParameter("test")!=null)	// GET method
       {
         response.setContentType("text/plain");
-        PrintWriter out=response.getWriter();
+        PrintWriter out = response.getWriter();
         HashMap<String,String> t = new HashMap<String,String>();
         t.put("JCHEM_LICENSE_OK", (LicenseManager.isLicensed(LicenseManager.JCHEM)?"True":"False"));
         out.print(HtmUtils.TestTxt(APPNAME, t));
       }
       else if (downloadtxt!=null && downloadtxt.length()>0) // POST param
       {
-        ServletOutputStream ostream=response.getOutputStream();
+        ServletOutputStream ostream = response.getOutputStream();
         HtmUtils.DownloadString(response, ostream, downloadtxt, request.getParameter("fname"));
       }
       else if (downloadfile!=null && downloadfile.length()>0) // POST param
       {
-        ServletOutputStream ostream=response.getOutputStream();
+        ServletOutputStream ostream = response.getOutputStream();
         HtmUtils.DownloadFile(response, ostream, downloadfile,
           request.getParameter("fname"));
       }
       else if (request.getParameter("topframe")!=null)
       // GET method , initial invocation of topframe w/ no params
       {
-        PrintWriter out=response.getWriter();
+        PrintWriter out = response.getWriter();
         response.setContentType("text/html");
         out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request));
         out.println(TopHtm(response));
@@ -203,8 +194,8 @@ public class badapple_servlet extends HttpServlet
       else if (request.getParameter("formframe")!=null)
       // GET method , initial invocation of formframe w/ no params
       {
-        boolean ok=initialize(request, mrequest, response);
-        PrintWriter out=response.getWriter();
+        boolean ok = initialize(request, mrequest, response);
+        PrintWriter out = response.getWriter();
         response.setContentType("text/html");
         out.println(HtmUtils.HeaderHtm(APPNAME, jsincludes, cssincludes, JavaScript(), "", color1, request));
         out.println(FormHtm(response));
@@ -224,7 +215,7 @@ public class badapple_servlet extends HttpServlet
         catch (Exception e)
         { PrintFrame(out, "outframe", "DB error: <PRE>"+e.getMessage()+"</PRE>"); }
         try {
-          HashMap<String, Integer> medians=badapple_utils.GetMedians(DBCON, DBSCHEMA);
+          HashMap<String, Integer> medians = badapple_utils.GetMedians(DBCON, DBSCHEMA);
           PrintFrame(out, "msgframe", "<PRE>"
             +"median_cTested="+medians.get("median_cTested")+"\n"
             +"median_sTested="+medians.get("median_sTested")+"\n"
@@ -241,27 +232,27 @@ public class badapple_servlet extends HttpServlet
 
         PrintFrame(out, "outframe", SCORE_RANGE_KEY);
 
-        String logo_htm="<TABLE CELLSPACING=5 CELLPADDING=5><TR><TD>";
-        String imghtm=("<IMG BORDER=\"0\" SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
+        String logo_htm = "<TABLE CELLSPACING=5 CELLPADDING=5><TR><TD>";
+        String imghtm = ("<IMG BORDER=\"0\" SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
         String tiphtm=(APPNAME+" web app from UNM Translational Informatics.");
-        String href=("http://datascience.unm.edu/");
+        String href = ("http://datascience.unm.edu/");
         logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white"));
         logo_htm+="</TD><TD>";
 
-        imghtm=("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
-        tiphtm=("JChem from ChemAxon Ltd.");
-        href=("https://www.chemaxon.com");
+        imghtm = ("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
+        tiphtm = ("JChem from ChemAxon Ltd.");
+        href = ("https://www.chemaxon.com");
         logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white"));
         logo_htm+="</TD><TD>";
 
-        imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/rdkit_logo.png\">");
-        tiphtm=("RDKit");
-        href=("http://www.rdkit.org");
+        imghtm = ("<IMG BORDER=0 HEIGHT=60 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/rdkit_logo.png\">");
+        tiphtm = ("RDKit");
+        href = ("http://www.rdkit.org");
         logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
 
-        imghtm=("<IMG BORDER=0 HEIGHT=\"40\" SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/JSME_logo.png\">");
-        tiphtm=("JSME Molecular Editor");
-        href=("http://peter-ertl.com/jsme/");
+        imghtm = ("<IMG BORDER=0 HEIGHT=\"40\" SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/JSME_logo.png\">");
+        tiphtm = ("JSME Molecular Editor");
+        href = ("http://peter-ertl.com/jsme/");
         logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
 
         logo_htm+="</TD></TR></TABLE>";
@@ -276,7 +267,7 @@ public class badapple_servlet extends HttpServlet
       }
       else	// GET method,  initial invocation of servlet w/ no params
       {
-        PrintWriter out=response.getWriter();
+        PrintWriter out = response.getWriter();
         response.setContentType("text/html");
         out.println(framesHtm(response)); // no body in frameset.
       }
@@ -342,22 +333,22 @@ public class badapple_servlet extends HttpServlet
     errors = new ArrayList<String>();
     params = new HttpParams();
 
-    String logo_htm="<TABLE CELLSPACING=5 CELLPADDING=5><TR><TD>";
-    String imghtm=("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
+    String logo_htm = "<TABLE CELLSPACING=5 CELLPADDING=5><TR><TD>";
+    String imghtm = ("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
 
-    String tiphtm=(APPNAME+" web app from UNM Translational Informatics.");
-    String href=("http://medicine.unm.edu/informatics/");
+    String tiphtm = (APPNAME+" web app from UNM Translational Informatics.");
+    String href = ("http://medicine.unm.edu/informatics/");
     logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD><TD>";
 
-    imghtm=("<IMG BORDER=0 HEIGHT=60 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/rdkit_logo.png\">");
-    tiphtm=("RDKit");
-    href=("http://www.rdkit.org");
+    imghtm = ("<IMG BORDER=0 HEIGHT=60 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/rdkit_logo.png\">");
+    tiphtm = ("RDKit");
+    href = ("http://www.rdkit.org");
     logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD><TD>";
-    imghtm=("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
-    tiphtm=("JChem and Marvin from ChemAxon Ltd.");
-    href=("http://www.chemaxon.com");
+    imghtm = ("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
+    tiphtm = ("JChem and Marvin from ChemAxon Ltd.");
+    href = ("http://www.chemaxon.com");
     logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD></TR></TABLE>";
 
@@ -411,16 +402,16 @@ public class badapple_servlet extends HttpServlet
     }
 
     String fname="infileDB";
-    File fileDB=mrequest.getFile(fname);
-    String intxt=params.getVal("intxt");
+    File fileDB = mrequest.getFile(fname);
+    String intxt = params.getVal("intxt");
+    intxt = intxt.replaceFirst("[\\s]+$", "");
+    intxt = intxt.replaceFirst("^([\n\r]+)", "untitled$1");
     String line = null;
-    intxt=intxt.replaceFirst("[\\s]+$", "");
-    intxt=intxt.replaceFirst("^([\n\r]+)", "untitled$1");
     if (fileDB!=null)
     {
       if (params.isChecked("file2txtDB") && fileDB!=null)
       {
-        BufferedReader br=new BufferedReader(new FileReader(fileDB));
+        BufferedReader br = new BufferedReader(new FileReader(fileDB));
         intxt="";
         for (int i=0;(line=br.readLine())!=null;++i)
         {
@@ -438,29 +429,29 @@ public class badapple_servlet extends HttpServlet
         params.setVal("intxt", "");
       }
     }
-    molsDB=new ArrayList<Molecule>();
+    molsDB = new ArrayList<Molecule>();
     MolImporter molReaderDB=null;
     if (params.getVal("molfmtDB").equals("automatic"))
     {
-      String ifmt_auto=MFileFormatUtil.getMostLikelyMolFormat(mrequest.getOriginalFileName(fname));
+      String ifmt_auto = MFileFormatUtil.getMostLikelyMolFormat(mrequest.getOriginalFileName(fname));
       if (ifmt_auto!=null)
       {
         if (fileDB!=null)
-          molReaderDB=new MolImporter(fileDB, ifmt_auto);
+          molReaderDB = new MolImporter(fileDB, ifmt_auto);
         else if (intxt.length()>0)
-          molReaderDB=new MolImporter(new ByteArrayInputStream(intxt.getBytes()), ifmt_auto);
+          molReaderDB = new MolImporter(new ByteArrayInputStream(intxt.getBytes()), ifmt_auto);
       }
       else
       {
         if (fileDB!=null)
-          molReaderDB=new MolImporter(new FileInputStream(fileDB));
+          molReaderDB = new MolImporter(new FileInputStream(fileDB));
         else if (intxt.length()>0)
-          molReaderDB=new MolImporter(new ByteArrayInputStream(intxt.getBytes()));
+          molReaderDB = new MolImporter(new ByteArrayInputStream(intxt.getBytes()));
       }
     }
     else
     {
-      molReaderDB=new MolImporter(new FileInputStream(fileDB), params.getVal("molfmtDB"));
+      molReaderDB = new MolImporter(new FileInputStream(fileDB), params.getVal("molfmtDB"));
     }
     if (params.isChecked("verbose"))
       errors.add("input DB format:  "+molReaderDB.getFormat()+" ("+MFileFormatUtil.getFormat(molReaderDB.getFormat()).getDescription()+")");
@@ -469,7 +460,7 @@ public class badapple_servlet extends HttpServlet
     while (true)
     {
       try {
-        m=molReaderDB.read();
+        m = molReaderDB.read();
       }
       catch (MolFormatException e)
       {
@@ -557,18 +548,18 @@ public class badapple_servlet extends HttpServlet
     depsize_menu+=("<OPTION VALUE=\"l\">L");
     depsize_menu+=("<OPTION VALUE=\"xl\">XL");
     depsize_menu+="</SELECT>\n";
-    depsize_menu=depsize_menu.replace("\""+params.getVal("depsize")+"\">", "\""+params.getVal("depsize")+"\" SELECTED>");
+    depsize_menu = depsize_menu.replace("\""+params.getVal("depsize")+"\">", "\""+params.getVal("depsize")+"\" SELECTED>");
 
     //String runmode_single=""; String runmode_multi="";
     //if (params.getVal("runmode").equals("single")) runmode_single="CHECKED";
     //else if (params.getVal("runmode").equals("multi")) runmode_multi="CHECKED";
     //else runmode_single="CHECKED";
 
-    String molfmt_menuDB="<SELECT NAME=\"molfmtDB\">\n";
+    String molfmt_menuDB = "<SELECT NAME=\"molfmtDB\">\n";
     molfmt_menuDB+=("<OPTION VALUE=\"automatic\">automatic\n");
     for (String fmt: MFileFormatUtil.getMolfileFormats())
     {
-      String desc=MFileFormatUtil.getFormat(fmt).getDescription();
+      String desc = MFileFormatUtil.getFormat(fmt).getDescription();
       molfmt_menuDB+=("<OPTION VALUE=\""+fmt+"\">"+desc+"\n");
     }
     molfmt_menuDB+="</SELECT>\n";
@@ -634,10 +625,10 @@ public class badapple_servlet extends HttpServlet
   {
     int n_rows=0;
     ArrayList<ScaffoldScore> scores=null;
-    try { scores=badapple_utils.GetScaffoldScores(DBCON, DBSCHEMA, CHEMKIT, mol, params.isChecked("verbose")?0:2); }
+    try { scores = badapple_utils.GetScaffoldScores(DBCON, DBSCHEMA, CHEMKIT, mol, params.isChecked("verbose")?0:2); }
     catch (Exception e) { errors.add("Exception (GetScaffoldScores): "+e.getMessage()); }
     if (scores==null) return n_rows;
-    try { n_rows=Scores2Output_Single(mol, scores); }
+    try { n_rows = Scores2Output_Single(mol, scores); }
     catch (Exception e) { errors.add("Exception (Scores2Output_Single): "+e.getMessage()); }
     return n_rows;
   }
@@ -689,24 +680,24 @@ public class badapple_servlet extends HttpServlet
     for (ScaffoldScore score: scores)
     {
       ++n_scaf;
-      String scafsmi=score.getSmiles();
-      Molecule mol_scaf=MolImporter.importMol(scafsmi, "smiles:");
+      String scafsmi = score.getSmiles();
+      Molecule mol_scaf = MolImporter.importMol(scafsmi, "smiles:");
       if (params.isChecked("verbose")) errors.add("scaffold: ["+score.getID()+"] "+scafsmi);
       String imghtm="";
       if (params.getVal("deptype").equals("scaf"))
       {
-        imghtm=HtmUtils.Smi2ImgHtm(scafsmi, "&clearqprops=true",
+        imghtm = HtmUtils.Smi2ImgHtm(scafsmi, "&clearqprops=true",
 		depsz, (int)Math.floor(1.25f*depsz),
 		MOL2IMG_SERVLETURL, true, 4, "parent.formframe.go_zoom_smi2img");
       }
       else
       {
         // Depict smiles; highlight using scafsmi as smarts.  smilesmatch option allows "[nH]" to match.
-        imghtm=HtmUtils.Smi2ImgHtm(qsmiles, "&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi, "UTF-8"),
+        imghtm = HtmUtils.Smi2ImgHtm(qsmiles, "&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi, "UTF-8"),
 		depsz, (int)Math.floor(1.25f*depsz),
 		MOL2IMG_SERVLETURL, true, 4, "parent.formframe.go_zoom_smi2img");
       }
-      Float pscore=score.getScore();
+      Float pscore = score.getScore();
       String bgcolor;
       String advisory;
       if (pscore==null || !score.getKnown())
@@ -789,15 +780,15 @@ public class badapple_servlet extends HttpServlet
     for (Molecule mol: mols)
     {
       try {
-        ArrayList<ScaffoldScore> scores=badapple_utils.GetScaffoldScores(DBCON, DBSCHEMA, CHEMKIT, mol, 0);
+        ArrayList<ScaffoldScore> scores = badapple_utils.GetScaffoldScores(DBCON, DBSCHEMA, CHEMKIT, mol, 0);
         scoreses.add(scores);
       }
       catch (Exception e) { errors.add("Exception: "+e.getMessage()); }
     }
     try { n_mol+=Scores2Output_Multi(mols, scoreses, response); }
-    catch (SQLException e) { errors.add("SQLException: "+e.getMessage()); }
-    catch (IOException e) { errors.add("IOException: "+e.getMessage()); }
+    catch (Exception e) { errors.add("IOException: "+e.getMessage()); }
 
+    errors.add("DEBUG: GoBadapple_Multi mols in: "+mols.size()+" ; out: "+n_mol);
     return n_mol;
   }
   /////////////////////////////////////////////////////////////////////////////
@@ -810,14 +801,15 @@ public class badapple_servlet extends HttpServlet
   private static Integer Scores2Output_Multi(List<Molecule> mols, ArrayList<ArrayList<ScaffoldScore> > scoreses, HttpServletResponse response)
       throws SQLException, IOException
   {
-    File dout=new File(SCRATCHDIR);
+    errors.add("DEBUG: SCRATCHDIR: "+SCRATCHDIR);
+    File dout = new File(SCRATCHDIR);
     if (!dout.exists())
     {
-      boolean ok=dout.mkdir();
+      boolean ok = dout.mkdir();
       System.err.println("SCRATCHDIR creation "+(ok?"succeeded":"failed")+": "+SCRATCHDIR);
     }
-    File fout=File.createTempFile(PREFIX, "_out.txt", dout);
-    PrintWriter fout_writer=new PrintWriter(new BufferedWriter(new FileWriter(fout, true)));
+    File fout = File.createTempFile(PREFIX, "_out.txt", dout);
+    PrintWriter fout_writer = new PrintWriter(new BufferedWriter(new FileWriter(fout, true)));
     fout_writer.printf("mol_i, mol_smi, mol_name, scaf_smi, pScore, in_drug, advisory, substancesTested, substancesActive, assaysTested, assaysActive, samplesTested, samplesActive\n");
     String thtm="<TABLE BORDER>\n";
     thtm+=("<TR><TH></TH><TH>molecule</TH><TH>scaffold</TH><TH>pScore</TH><TH>InDrug</TH><TH>advisory</TH><TH>details</TH></TR>\n");
@@ -825,7 +817,7 @@ public class badapple_servlet extends HttpServlet
     for (List<ScaffoldScore> scores: scoreses)
     {
       ++i_mol;
-      Molecule mol=mols.get(i_mol-1);
+      Molecule mol = mols.get(i_mol-1);
       Float pscore_mol=0.0f;
       Float pscore_mol_nd=0.0f;
       int n_removed=0;
@@ -833,7 +825,7 @@ public class badapple_servlet extends HttpServlet
       boolean inDrug=false;
 
       String qsmiles=null;
-      try { qsmiles=MolExporter.exportToFormat(mol, "smiles:u,+a_gen"); } /// Aromatize so matching/highlighting works.
+      try { qsmiles = MolExporter.exportToFormat(mol, "smiles:u,+a_gen"); } /// Aromatize so matching/highlighting works.
       catch (IOException e) { qsmiles=params.getVal("smiles"); }
       if (params.isChecked("verbose"))
         errors.add("query: "+qsmiles);
@@ -853,7 +845,7 @@ public class badapple_servlet extends HttpServlet
       {
         if (!score.getInDrug())
         {
-          pscore_mol_nd=score.getScore();
+          pscore_mol_nd = score.getScore();
           break;
         }
       }
@@ -867,7 +859,7 @@ public class badapple_servlet extends HttpServlet
 
         String bgcolor_mol;
         String advisory_mol;
-        Float pscore_max=scores.get(0).getScore(); //only use highest scaf-score
+        Float pscore_max = scores.get(0).getScore(); //only use highest scaf-score
         if (pscore_max==null || !scores.get(0).getKnown())
         {
           advisory_mol="None";
@@ -894,20 +886,20 @@ public class badapple_servlet extends HttpServlet
         for (ScaffoldScore score: scores)
         {
           ++i_scaf;
-          String scafsmi=score.getSmiles();
-          Molecule mol_scaf=MolImporter.importMol(scafsmi, "smiles:");
+          String scafsmi = score.getSmiles();
+          Molecule mol_scaf = MolImporter.importMol(scafsmi, "smiles:");
           if (params.isChecked("verbose")) errors.add("scaffold: ["+score.getID()+"] "+scafsmi);
 
           // Depict qmol; highlight using scafsmi as smarts.  smilesmatch option allows "[nH]" to match.
-          String imghtm_mol=HtmUtils.Smi2ImgHtm(qsmiles, "&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi, "UTF-8"),
+          String imghtm_mol = HtmUtils.Smi2ImgHtm(qsmiles, "&smilesmatch=true&smarts="+URLEncoder.encode(scafsmi, "UTF-8"),
 		    depsz, (int)Math.floor(1.25f*depsz),
 		    MOL2IMG_SERVLETURL, true, 4, "parent.formframe.go_zoom_smi2img");
 
-          String imghtm_scaf=HtmUtils.Smi2ImgHtm(scafsmi, "&clearqprops=true",
+          String imghtm_scaf = HtmUtils.Smi2ImgHtm(scafsmi, "&clearqprops=true",
 		    depsz, (int)Math.floor(1.25f*depsz),
 		    MOL2IMG_SERVLETURL, true, 4, "parent.formframe.go_zoom_smi2img");
       
-          Float pscore=score.getScore();
+          Float pscore = score.getScore();
           String bgcolor_scaf;
           String advisory;
           if (pscore==null || !score.getKnown())
@@ -1059,8 +1051,8 @@ public class badapple_servlet extends HttpServlet
     if (i_mol>0) outputs.add(thtm);
     outputs.add("For each molecule, highest scoring scaffold determines overall score.");
     fout_writer.close();
-    String fname=(SERVLETNAME+"_out.csv");
-    String bhtm=(
+    String fname = (SERVLETNAME+"_out.csv");
+    String bhtm = (
       "<FORM METHOD=\"POST\" ACTION=\""+response.encodeURL(SERVLETNAME)+"\">\n"+
       "<INPUT TYPE=HIDDEN NAME=\"downloadfile\" VALUE=\""+fout.getAbsolutePath()+"\">\n"+
       "<INPUT TYPE=HIDDEN NAME=\"fname\" VALUE=\""+fname+"\">\n"+
@@ -1230,41 +1222,41 @@ public class badapple_servlet extends HttpServlet
     CONTEXT = getServletContext();
     CONTEXTPATH = CONTEXT.getContextPath();
 
-    try { APPNAME=conf.getInitParameter("APPNAME"); }
-    catch (Exception e) { APPNAME=this.getServletName(); }
-    UPLOADDIR=conf.getInitParameter("UPLOADDIR");
+    try { APPNAME = conf.getInitParameter("APPNAME"); }
+    catch (Exception e) { APPNAME = this.getServletName(); }
+    UPLOADDIR = conf.getInitParameter("UPLOADDIR");
     if (UPLOADDIR==null) throw new ServletException("ERROR: UPLOADDIR parameter required.");
-    SCRATCHDIR=conf.getInitParameter("SCRATCHDIR");
+    SCRATCHDIR = conf.getInitParameter("SCRATCHDIR");
     if (SCRATCHDIR==null) SCRATCHDIR="/tmp";
-    DBTYPE=conf.getInitParameter("DBTYPE");
+    DBTYPE = conf.getInitParameter("DBTYPE");
     if (DBTYPE==null) throw new ServletException("ERROR: DBTYPE parameter required.");
-    DBNAME=conf.getInitParameter("DBNAME");
+    DBNAME = conf.getInitParameter("DBNAME");
     if (DBNAME==null) throw new ServletException("ERROR: DBNAME parameter required.");
-    DBHOST=conf.getInitParameter("DBHOST");
+    DBHOST = conf.getInitParameter("DBHOST");
     if (DBHOST==null) throw new ServletException("ERROR: DBHOST parameter required.");
-    DBNAME=conf.getInitParameter("DBNAME");
+    DBNAME = conf.getInitParameter("DBNAME");
     if (DBNAME==null) throw new ServletException("ERROR: DBNAME parameter required.");
-    DBUSR=conf.getInitParameter("DBUSR");
+    DBUSR = conf.getInitParameter("DBUSR");
     if (DBUSR==null) throw new ServletException("ERROR: DBUSR parameter required.");
-    DBPW=conf.getInitParameter("DBPW");
+    DBPW = conf.getInitParameter("DBPW");
     if (DBPW==null) throw new ServletException("ERROR: DBPW parameter required.");
-    DBSCHEMA=conf.getInitParameter("DBSCHEMA");
+    DBSCHEMA = conf.getInitParameter("DBSCHEMA");
     if (DBSCHEMA==null) throw new ServletException("ERROR: DBSCHEMA parameter required.");
-    try { DBPORT=Integer.parseInt(conf.getInitParameter("DBPORT")); }
+    try { DBPORT = Integer.parseInt(conf.getInitParameter("DBPORT")); }
     catch (NumberFormatException e) { DBPORT=5432; }
-    try { CHEMKIT=conf.getInitParameter("CHEMKIT"); }
+    try { CHEMKIT = conf.getInitParameter("CHEMKIT"); }
     catch (Exception e) { CHEMKIT="rdkit"; }
 
-    try { N_MAX=Integer.parseInt(conf.getInitParameter("N_MAX")); }
+    try { N_MAX = Integer.parseInt(conf.getInitParameter("N_MAX")); }
     catch (Exception e) { N_MAX=100; }
-    try { MAX_POST_SIZE=Integer.parseInt(conf.getInitParameter("MAX_POST_SIZE")); }
+    try { MAX_POST_SIZE = Integer.parseInt(conf.getInitParameter("MAX_POST_SIZE")); }
     catch (Exception e) { MAX_POST_SIZE=10*1024*1024; }
-    try { PSCORE_CUTOFF_MODERATE=Integer.parseInt(conf.getInitParameter("PSCORE_CUTOFF_MODERATE")); }
+    try { PSCORE_CUTOFF_MODERATE = Integer.parseInt(conf.getInitParameter("PSCORE_CUTOFF_MODERATE")); }
     catch (Exception e) { PSCORE_CUTOFF_MODERATE=100; }
-    try { PSCORE_CUTOFF_HIGH=Integer.parseInt(conf.getInitParameter("PSCORE_CUTOFF_HIGH")); }
+    try { PSCORE_CUTOFF_HIGH = Integer.parseInt(conf.getInitParameter("PSCORE_CUTOFF_HIGH")); }
     catch (Exception e) { PSCORE_CUTOFF_HIGH=300; }
 
-    try { String s=conf.getInitParameter("DEBUG"); if (s.equalsIgnoreCase("TRUE")) DEBUG=true; }
+    try { String s = conf.getInitParameter("DEBUG"); if (s.equalsIgnoreCase("TRUE")) DEBUG=true; }
     catch (Exception e) { DEBUG=false; }
 
     /// Initialize persistent connection once per instantiation.
@@ -1286,7 +1278,7 @@ public class badapple_servlet extends HttpServlet
       "<TD>high pScore; strong indication of promiscuity</TD></TR>\n"+
       "</TABLE>\n";
 
-    PROXY_PREFIX=((conf.getInitParameter("PROXY_PREFIX")!=null)?conf.getInitParameter("PROXY_PREFIX"):"");
+    PROXY_PREFIX = ((conf.getInitParameter("PROXY_PREFIX")!=null)?conf.getInitParameter("PROXY_PREFIX"):"");
   }
   /////////////////////////////////////////////////////////////////////////////
   public void doGet(HttpServletRequest request, HttpServletResponse response)

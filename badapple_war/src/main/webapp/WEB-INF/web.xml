@@ -14,7 +14,7 @@
     <init-param> <param-name>UPLOADDIR</param-name>
       <param-value>/tmp</param-value> </init-param>
     <init-param> <param-name>SCRATCHDIR</param-name>
-      <param-value>scratch</param-value></init-param>
+      <param-value>/tmp/scratch</param-value></init-param>
     <init-param> <param-name>N_MAX</param-name>
       <param-value>200</param-value> </init-param>
     <init-param> <param-name>DBTYPE</param-name>
@@ -74,7 +74,7 @@
     <init-param> <param-name>UPLOADDIR</param-name>
       <param-value>/tmp</param-value> </init-param>
     <init-param> <param-name>SCRATCHDIR</param-name>
-      <param-value>${catalina.home}/webapps/biocomp/scratch</param-value></init-param>
+      <param-value>/tmp/scratch</param-value></init-param>
     <init-param> <param-name>N_MAX</param-name>
       <param-value>200</param-value> </init-param>
     <init-param><param-name>MAX_POST_SIZE</param-name>
