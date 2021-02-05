@@ -788,7 +788,7 @@ public class badapple_servlet extends HttpServlet
     try { n_mol+=Scores2Output_Multi(mols, scoreses, response); }
     catch (Exception e) { errors.add("IOException: "+e.getMessage()); }
 
-    errors.add("DEBUG: GoBadapple_Multi mols in: "+mols.size()+" ; out: "+n_mol);
+    //errors.add("DEBUG: GoBadapple_Multi mols in: "+mols.size()+" ; out: "+n_mol);
     return n_mol;
   }
   /////////////////////////////////////////////////////////////////////////////
@@ -801,7 +801,7 @@ public class badapple_servlet extends HttpServlet
   private static Integer Scores2Output_Multi(List<Molecule> mols, ArrayList<ArrayList<ScaffoldScore> > scoreses, HttpServletResponse response)
       throws SQLException, IOException
   {
-    errors.add("DEBUG: SCRATCHDIR: "+SCRATCHDIR);
+    //errors.add("DEBUG: SCRATCHDIR: "+SCRATCHDIR);
     File dout = new File(SCRATCHDIR);
     if (!dout.exists())
     {
