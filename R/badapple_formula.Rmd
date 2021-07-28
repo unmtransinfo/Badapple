@@ -5,6 +5,8 @@ output:
   flexdashboard::flex_dashboard:
     vertical_layout: scroll
 fontfamily: palatino
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r}
@@ -72,7 +74,7 @@ yMod = c(xy_mod_min, xy_high_min, y_mod_max)
 xHigh <- c(xy_high_min, xy_max)
 yHigh <- c(xy_high_min, xy_max)
 
-p <- plot_ly() %>%
+plot_ly() %>%
 	add_trace(type="scatter", name="Low [0,100)", x=xLow, y=yLow, mode="lines", fill="tozeroy", fillcolor="green", line=list(color="green")) %>%
 	add_trace(type="scatter", name="Moderate [100,300)", x=xMod, y=yMod, mode="lines", fill="tonexty", fillcolor="yellow", line=list(color="yellow")) %>%
 	add_trace(type="scatter", name="High [300,inf)", x=xHigh, y=yHigh, mode="lines", fill="tonexty", fillcolor="red", line=list(color="red")) %>%
@@ -85,5 +87,4 @@ p <- plot_ly() %>%
 		autosize=T,
 		annotations=list(text=sprintf("sActive, wActive = 80th percentiles<br>sTested, wTested = medians<br>median_aTested = %d", params['med_aTested']),
 		showarrow=F, x=50, y=250, xanchor="left", font=list(size=12)))
-p
 ``` 
