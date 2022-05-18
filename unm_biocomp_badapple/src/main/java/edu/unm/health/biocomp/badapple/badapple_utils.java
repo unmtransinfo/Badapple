@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import chemaxon.struc.*;
 import chemaxon.formats.*;
 import chemaxon.marvin.io.MolExportException;
+import chemaxon.license.*; // LicenseManager
 
 import edu.unm.health.biocomp.util.db.*;
 import edu.unm.health.biocomp.hscaf.*;
@@ -960,5 +961,10 @@ public class badapple_utils
     catch (MolExportException e) { System.err.println(e.getMessage()); }
     catch (IOException e) { System.err.println(e.getMessage()); }
     return smi;
+  }
+  /////////////////////////////////////////////////////////////////////////////
+  public static Boolean TestChemaxonLicense()
+  {
+    return LicenseManager.isLicensed(LicenseManager.JCHEM);
   }
 }

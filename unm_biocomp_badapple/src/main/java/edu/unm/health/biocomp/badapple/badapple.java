@@ -11,6 +11,7 @@ import org.apache.commons.cli.Option.*; // Builder
 import chemaxon.struc.*;
 import chemaxon.formats.*;
 import chemaxon.marvin.io.*;
+import chemaxon.license.*; // LicenseManager
 
 import edu.unm.health.biocomp.hscaf.*;
 import edu.unm.health.biocomp.util.db.*; // DBCon, pg_utils, mysql_utils, derby_utils
@@ -48,6 +49,7 @@ public class badapple
   private static String dbpw="foobar";
   private static String dbtype="postgres";
   private static String chemkit="rdkit";
+  private static String chemaxon_license_file=null;
   private static Integer maxatoms=50;
   private static Integer maxrings=5;
   private static Integer verbose=0;
@@ -58,6 +60,7 @@ public class badapple
   private static Boolean describedb=false;
   private static Boolean describescaf=false;
   private static Boolean process_mols=false;
+  private static Boolean test_chemaxon_license=false;
   private static Integer scafid=null;
   private static Integer nmax=0;
   private static Integer nskip=0;
@@ -73,6 +76,7 @@ public class badapple
      
     operations.addOption(Option.builder("describescaf").desc("describe specified scaffold").build());
     operations.addOption(Option.builder("process_mols").desc("process input molecules").build());
+    operations.addOption(Option.builder("test_chemaxon_license").desc("test chemaxon license").build());
     operations.setRequired(true);
     opts.addOptionGroup(operations);
     String HELPHEADER = ("BADAPPLE - command line app for Badapple\nOperations: "+operations.toString());
@@ -96,7 +100,7 @@ public class badapple
     opts.addOption(Option.builder("nskip").hasArg().type(Integer.class).desc("skip NSKIP molecules").build());
     opts.addOption(Option.builder("scafid_min").desc("min scaf ID to calculate/annotate").build());
     opts.addOption(Option.builder("scafid_max").desc("max scaf ID to calculate/annotate").build());
-
+    opts.addOption(Option.builder("chemaxon_license_file").hasArg().desc("chemaxon_license_file [$HOME/.chemaxon/license.cxl]").build());
     opts.addOption("v", "verbose", false, "verbose.");
     opts.addOption("vv", "vverbose", false, "very verbose.");
     opts.addOption("vvv", "vvverbose", false, "very very verbose.");
@@ -115,6 +119,7 @@ public class badapple
     if (cl.hasOption("describedb")) describedb = true;
     if (cl.hasOption("describescaf")) describescaf = true;
     if (cl.hasOption("process_mols")) process_mols = true;
+    if (cl.hasOption("test_chemaxon_license")) test_chemaxon_license = true;
 
     if (cl.hasOption("i")) ifile = cl.getOptionValue("i");
     if (cl.hasOption("o")) ofile = cl.getOptionValue("o");
@@ -134,6 +139,7 @@ public class badapple
     if (cl.hasOption("scafid")) scafid = (Integer)(cl.getParsedOptionValue("scafid"));
     if (cl.hasOption("scafid_min")) scafid_min = (Long)(cl.getParsedOptionValue("scafid_min"));
     if (cl.hasOption("scafid_max")) scafid_max = (Long)(cl.getParsedOptionValue("scafid_max"));
+    if (cl.hasOption("chemaxon_license_file")) chemaxon_license_file = cl.getOptionValue("chemaxon_license_file");
     if (cl.hasOption("vvv")) verbose = 3;
     else if (cl.hasOption("vv")) verbose = 2;
     else if (cl.hasOption("v")) verbose = 1;
@@ -147,6 +153,14 @@ public class badapple
       System.err.println("JRE_VERSION: "+JREUtils.JREVersion());
       System.err.println("JChem version: "+com.chemaxon.version.VersionInfo.getVersion());
     }
+
+    if (chemaxon_license_file==null) {
+      if (System.getenv("HOME")!=null) {
+        chemaxon_license_file = System.getenv("HOME")+"/.chemaxon/license.cxl";
+      }
+    }
+    try { LicenseManager.setLicenseFile(chemaxon_license_file); }
+    catch (Exception e) { System.err.println("ERROR: "+e.getMessage()); }
 
     MolImporter molReader=null;
     if (ifile!=null)
@@ -199,6 +213,11 @@ public class badapple
       if (molReader==null)
         helper.printHelp(APPNAME, HELPHEADER, opts, ("ERROR: -i IFILE required for -process_mols."), true);
       badapple_utils.ProcessMols(dbcon, dbschema, chemkit, molReader, molWriter, nskip, nmax, maxatoms, maxrings, verbose);
+    }
+    else if (test_chemaxon_license)
+    {
+      Boolean ok = badapple_utils.TestChemaxonLicense();
+      System.out.println("Chemaxon license ok: "+ok);
     }
     else
     {

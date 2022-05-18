@@ -50,7 +50,7 @@ mvn --projects badapple_war jetty:run
 ## Command-line usage
 
 ```
-mvn exec:java -Dexec.mainClass="edu.unm.health.biocomp.badapple.badapple"
+mvn --projects unm_biocomp_badapple exec:java -Dexec.mainClass="edu.unm.health.biocomp.badapple.badapple -Dexec.args="-describedb"
 ```
 
 Or:

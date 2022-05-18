@@ -337,18 +337,18 @@ public class badapple_servlet extends HttpServlet
     String imghtm = ("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/biocomp_logo_only.gif\">");
 
     String tiphtm = (APPNAME+" web app from UNM Translational Informatics.");
-    String href = ("http://medicine.unm.edu/informatics/");
+    String href = ("https://datascience.unm.edu/");
     logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD><TD>";
 
     imghtm = ("<IMG BORDER=0 HEIGHT=60 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/rdkit_logo.png\">");
     tiphtm = ("RDKit");
-    href = ("http://www.rdkit.org");
+    href = ("https://www.rdkit.org");
     logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD><TD>";
     imghtm = ("<IMG BORDER=0 SRC=\""+((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/images/chemaxon_powered_100px.png\">");
     tiphtm = ("JChem and Marvin from ChemAxon Ltd.");
-    href = ("http://www.chemaxon.com");
+    href = ("https://www.chemaxon.com");
     logo_htm+=(HtmUtils.HtmTipper(imghtm, tiphtm, href, 200, "white", "parent.formframe"));
     logo_htm+="</TD></TR></TABLE>";
 
@@ -366,6 +366,7 @@ public class badapple_servlet extends HttpServlet
       errors.add("ERROR: ChemAxon LicenseManager error: "+e.getMessage());
     }
     LicenseManager.refresh();
+    errors.add("LicenseManager.isLicensed(JCHEM): "+(LicenseManager.isLicensed(LicenseManager.JCHEM)?"True":"False"));
 
     MOL2IMG_SERVLETURL = (((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/mol2img");
     JSMEURL = (((PROXY_PREFIX!=null)?PROXY_PREFIX:"")+CONTEXTPATH+"/jsme_win.html");
