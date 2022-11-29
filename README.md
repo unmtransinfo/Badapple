@@ -5,8 +5,8 @@ Badapple web app, utility apps, library, and project code.
 Methods developed at the [UNM Translational Informatics Division](http://datascience.unm.edu)
 for for HTS analytics and hit prioritization.
 
-* [Public web app](http://pasilla.health.unm.edu/badapple)
-* [Badapple: promiscuity patterns from noisy evidence , Yang et al., J. Cheminfo. 8:29 (2016)](http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0137-3).
+* [Public web app](https://datascience.health.unm.edu/tomcat/badapple/badapple)
+* [Badapple: promiscuity patterns from noisy evidence, Yang et al., J. Cheminfo. 8:29 (2016)](http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0137-3).
 * [Badapple Formula](/doc/images/badapple_formula.png)
 
 ## Dependencies
@@ -15,8 +15,8 @@ for for HTS analytics and hit prioritization.
 * Maven 3.5+
 * [`unm_biocomp_hscaf.jar`](https://github.com/unmtransinfo/unm_biocomp_hscaf), [`unm_biocomp_depict.jar`](https://github.com/unmtransinfo/unm_biocomp_depict), [`unm_biocomp_util.jar`](https://github.com/unmtransinfo/unm_biocomp_util)
 * ChemAxon JChem 19.3.0+
-* Access to [ChemAxon Maven repository](https://hub.chemaxon.com)
-(see [documentation](https://docs.chemaxon.com/display/docs/Public+Repository)).
+* Access to [ChemAxon Maven repository](https://hub.chemaxon.com) (see [documentation](https://docs.chemaxon.com/display/docs/Public+Repository)).
+* Runtime: Badapple database accessible (PostgreSQL with RDKit cartridge).
 
 ## Compiling
 
@@ -57,6 +57,53 @@ Or:
 
 ```
 java -jar unm_biocomp_badapple-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+```
+
+Or:
+
+```
+java -classpath unm_biocomp_badapple-0.0.1-SNAPSHOT-jar-with-dependencies.jar edu.unm.health.biocomp.badapple.badapple
+```
+
+```
+usage: Badapple [-chemaxon_license_file <arg>] [-dbhost <arg>] [-dbname
+       <arg>] [-dbport <arg>] [-dbpw <arg>] [-dbschema <arg>] [-dbusr
+       <arg>] -describedb | -describescaf | -process_mols |
+       -test_chemaxon_license  [-h] [-i <IFILE>] [-maxatoms <arg>]
+       [-maxrings <arg>] [-nmax <arg>] [-nskip <arg>] [-o <OFILE>]
+       [-scafid <arg>] [-scafid_max] [-scafid_min]  [-v] [-vv] [-vvv]
+Badapple - command line app for Badapple
+Operations: [-describedb describe db, -describescaf describe specified
+scaffold, -process_mols process input molecules, -test_chemaxon_license
+test chemaxon license]
+ -chemaxon_license_file <arg>   chemaxon_license_file
+                                [$HOME/.chemaxon/license.cxl]
+ -dbhost <arg>                  db host [localhost]
+ -dbname <arg>                  db name [badapple]
+ -dbport <arg>                  db port [5432]
+ -dbpw <arg>                    db password
+ -dbschema <arg>                db schema [public]
+ -dbusr <arg>                   db user [www]
+ -describedb                    describe db
+ -describescaf                  describe specified scaffold
+ -h,--help                      Show this help.
+ -i <IFILE>                     input molecules
+ -maxatoms <arg>                max atom count of input mol [50]
+ -maxrings <arg>                max ring count of input mol [5]
+ -nmax <arg>                    quit after NMAX molecules
+ -nskip <arg>                   skip NSKIP molecules
+ -o <OFILE>                     output molecules, w/ scores
+ -process_mols                  process input molecules
+ -scafid <arg>                  scaffold ID
+ -scafid_max                    max scaf ID to calculate/annotate
+ -scafid_min                    min scaf ID to calculate/annotate
+ -test_chemaxon_license         test chemaxon license
+ -v,--verbose                   verbose.
+ -vv,--vverbose                 very verbose.
+ -vvv,--vvverbose               very very verbose.
+Missing required option: [-describedb describe db, -describescaf describe
+specified scaffold, -process_mols process input molecules,
+-test_chemaxon_license test chemaxon license]
 ```
 
 ## Docker

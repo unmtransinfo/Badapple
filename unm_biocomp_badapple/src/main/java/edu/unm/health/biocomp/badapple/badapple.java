@@ -14,7 +14,7 @@ import chemaxon.marvin.io.*;
 import chemaxon.license.*; // LicenseManager
 
 import edu.unm.health.biocomp.hscaf.*;
-import edu.unm.health.biocomp.util.db.*; // DBCon, pg_utils, mysql_utils, derby_utils
+import edu.unm.health.biocomp.util.db.*; // DBCon, pg_utils, derby_utils
 import edu.unm.health.biocomp.util.*; // time_utils
 import edu.unm.health.biocomp.util.jre.*;
 
@@ -22,29 +22,20 @@ import edu.unm.health.biocomp.util.jre.*;
 	<br>
 	Database engines supported:
 	<ul>
-	<li>PostgreSQL
-	<ul>
-	<li>PostgreSQL JDBC driver (org.postgresql.Driver).
-	<li>Requires either (1) RDKit or (2) gNova OpenChord.
-	</ul>
-	<li>MySQL
-	<ul>
-	<li>MySQL JDBC driver (com.mysql.jdbc.Driver).
-	<li>No chemical cartridge yet.
-	</ul>
-	<li>Derby
+	<li>PostgreSQL JDBC driver (org.postgresql.Driver), with RDKit Cartridge.
+	<li>Derby (deprecated)
 	</ul>
 	<br>
 	@author Jeremy J Yang
 */
 public class badapple
 {
-  private static String APPNAME="BADAPPLE";
+  private static String APPNAME="Badapple";
   private static String dbhost="localhost";
   private static Integer dbport=5432; //PostgreSql default
+  private static String dbschema="public"; //PostgreSql default
   private static String dbname="badapple";
-  private static String dbdir="/tmp";
-  private static String dbschema="public";
+  private static String dbdir="/tmp"; //Derby only
   private static String dbusr="www";
   private static String dbpw="foobar";
   private static String dbtype="postgres";
@@ -79,18 +70,18 @@ public class badapple
     operations.addOption(Option.builder("test_chemaxon_license").desc("test chemaxon license").build());
     operations.setRequired(true);
     opts.addOptionGroup(operations);
-    String HELPHEADER = ("BADAPPLE - command line app for Badapple\nOperations: "+operations.toString());
-    String HELPFOOTER = ("UNM Translational Informatics Division");
+    String HELPHEADER = ("Badapple - command line app for Badapple\nOperations: "+operations.toString());
+    String HELPFOOTER = ("UNM SoM, DoIM, Translational Informatics Division");
 
     opts.addOption(Option.builder("i").hasArg().argName("IFILE").desc("input molecules").build());
     opts.addOption(Option.builder("o").hasArg().argName("OFILE").desc("output molecules, w/ scores").build());
     opts.addOption(Option.builder("scafid").hasArg().desc("scaffold ID").build());
-    opts.addOption(Option.builder("dbtype").hasArg().desc("db type (postgres|mysql|derby) ["+dbtype+"]").build());
-    opts.addOption(Option.builder("chemkit").hasArg().desc("chemical cartridge (rdkit|openchord) ["+chemkit+"]").build());
+    //opts.addOption(Option.builder("dbtype").hasArg().desc("db type (postgres|mysql|derby) ["+dbtype+"]").build());
+    //opts.addOption(Option.builder("chemkit").hasArg().desc("chemical cartridge (rdkit|openchord) ["+chemkit+"]").build());
     opts.addOption(Option.builder("dbhost").hasArg().desc("db host ["+dbhost+"]").build());
-    opts.addOption(Option.builder("dbdir").hasArg().desc("db dir (Derby only) ["+dbdir+"]").build());
+    //opts.addOption(Option.builder("dbdir").hasArg().desc("db dir (Derby only) ["+dbdir+"]").build());
     opts.addOption(Option.builder("dbname").hasArg().desc("db name ["+dbname+"]").build());
-    opts.addOption(Option.builder("dbschema").hasArg().desc("db schema ["+dbschema+"] (postgres)").build());
+    opts.addOption(Option.builder("dbschema").hasArg().desc("db schema ["+dbschema+"]").build());
     opts.addOption(Option.builder("dbusr").hasArg().desc("db user ["+dbusr+"]").build());
     opts.addOption(Option.builder("dbpw").hasArg().desc("db password").build());
     opts.addOption(Option.builder("dbport").hasArg().type(Integer.class).desc("db port ["+dbport+"]").build());
@@ -128,10 +119,9 @@ public class badapple
     if (cl.hasOption("dbschema")) dbschema = cl.getOptionValue("dbschema");
     if (cl.hasOption("dbusr")) dbusr = cl.getOptionValue("dbusr");
     if (cl.hasOption("dbpw")) dbpw = cl.getOptionValue("dbpw");
-    if (cl.hasOption("dbdir")) dbdir = cl.getOptionValue("dbdir");
+    //if (cl.hasOption("dbdir")) dbdir = cl.getOptionValue("dbdir");
     if (cl.hasOption("dbport")) dbport = (Integer)(cl.getParsedOptionValue("dbport"));
-    if (cl.hasOption("chemkit")) chemkit = cl.getOptionValue("chemkit");
-    if (cl.hasOption("dbtype")) dbtype = cl.getOptionValue("dbtype");
+    //if (cl.hasOption("dbtype")) dbtype = cl.getOptionValue("dbtype");
     if (cl.hasOption("maxrings")) maxrings = (Integer)(cl.getParsedOptionValue("maxrings"));
     if (cl.hasOption("maxatoms")) maxatoms = (Integer)(cl.getParsedOptionValue("maxatoms"));
     if (cl.hasOption("nmax")) nmax = (Integer)(cl.getParsedOptionValue("nmax"));
@@ -161,6 +151,18 @@ public class badapple
     }
     try { LicenseManager.setLicenseFile(chemaxon_license_file); }
     catch (Exception e) { System.err.println("ERROR: "+e.getMessage()); }
+    if (test_chemaxon_license)
+    {
+      System.out.println("Chemaxon license file: "+chemaxon_license_file);
+      System.out.println("Chemaxon license ok: "+badapple_utils.TestChemaxonLicense());
+      for (String p: LicenseManager.getProductList(false)) {
+        System.out.println("Chemaxon licensed product: "+p);
+      }
+      for (String p: LicenseManager.getPluginList()) {
+        System.out.println("Chemaxon licensed plugin: "+p);
+      }
+      System.exit(0);
+    }
 
     MolImporter molReader=null;
     if (ifile!=null)
@@ -213,11 +215,6 @@ public class badapple
       if (molReader==null)
         helper.printHelp(APPNAME, HELPHEADER, opts, ("ERROR: -i IFILE required for -process_mols."), true);
       badapple_utils.ProcessMols(dbcon, dbschema, chemkit, molReader, molWriter, nskip, nmax, maxatoms, maxrings, verbose);
-    }
-    else if (test_chemaxon_license)
-    {
-      Boolean ok = badapple_utils.TestChemaxonLicense();
-      System.out.println("Chemaxon license ok: "+ok);
     }
     else
     {
