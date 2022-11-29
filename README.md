@@ -106,6 +106,12 @@ specified scaffold, -process_mols process input molecules,
 -test_chemaxon_license test chemaxon license]
 ```
 
+Example:
+
+```
+java -classpath unm_biocomp_badapple-0.0.1-SNAPSHOT-jar-with-dependencies.jar edu.unm.health.biocomp.badapple.badapple -i data/badapple_test.smi -o badapple_test_out.smiles
+```
+
 ## Docker
 
 * Docker containers based on Ubuntu 20.04.

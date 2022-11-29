@@ -74,7 +74,7 @@ public class badapple
     String HELPFOOTER = ("UNM SoM, DoIM, Translational Informatics Division");
 
     opts.addOption(Option.builder("i").hasArg().argName("IFILE").desc("input molecules").build());
-    opts.addOption(Option.builder("o").hasArg().argName("OFILE").desc("output molecules, w/ scores").build());
+    opts.addOption(Option.builder("o").hasArg().argName("OFILE").desc("output molecules, w/ scores (SDF or SMILES-TSV)").build());
     opts.addOption(Option.builder("scafid").hasArg().desc("scaffold ID").build());
     //opts.addOption(Option.builder("dbtype").hasArg().desc("db type (postgres|mysql|derby) ["+dbtype+"]").build());
     //opts.addOption(Option.builder("chemkit").hasArg().desc("chemical cartridge (rdkit|openchord) ["+chemkit+"]").build());
@@ -176,16 +176,17 @@ public class badapple
     if (ofile!=null)
     {
       String ofmt = MFileFormatUtil.getMostLikelyMolFormat(ofile);
-      if (ofmt.equals("smiles")) ofmt="smiles:+n-a"; //Kekule for compatibility
-      molWriter = new MolExporter(new FileOutputStream(ofile),ofmt);
+      //if (ofmt.equals("smiles")) ofmt="smiles:-aT*"; //Kekule, TSV (issue: -a disables TSV header)
+      if (ofmt.equals("smiles")) ofmt="smiles:T*"; //TSV
+      molWriter = new MolExporter(new FileOutputStream(ofile), ofmt);
     } else {
-      molWriter = new MolExporter(System.out,"sdf");
+      molWriter = new MolExporter(System.out, "sdf");
     }
 
     String dbname_full = (dbtype.equals("derby")?(dbdir+"/"+dbname):dbname);
 
     DBCon dbcon = null;
-    try { dbcon = new DBCon(dbtype,dbhost,dbport,dbname_full,dbusr,dbpw); }
+    try { dbcon = new DBCon(dbtype, dbhost, dbport, dbname_full, dbusr, dbpw); }
     catch (Exception e) {
       helper.printHelp(APPNAME, HELPHEADER, opts, ("DB ("+dbtype+") error; "+e.getMessage()), true);
       System.exit(0);
