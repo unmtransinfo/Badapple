@@ -15,9 +15,9 @@ local installation and the command-line interface is recommended.
 * Java 8+
 * Maven 3.5+
 * Additional libraries (clone and install with `mvn clean install`)
- * [`unm_biocomp_util.jar`](https://github.com/unmtransinfo/unm_biocomp_util)
- * [`unm_biocomp_depict.jar`](https://github.com/unmtransinfo/unm_biocomp_depict)
- * [`unm_biocomp_hscaf.jar`](https://github.com/unmtransinfo/unm_biocomp_hscaf)
+	* [`unm_biocomp_util.jar`](https://github.com/unmtransinfo/unm_biocomp_util)
+	* [`unm_biocomp_depict.jar`](https://github.com/unmtransinfo/unm_biocomp_depict)
+	* [`unm_biocomp_hscaf.jar`](https://github.com/unmtransinfo/unm_biocomp_hscaf)
 * ChemAxon JChem 19.3.0+
 * Access to [ChemAxon Maven repository](https://hub.chemaxon.com) (see [documentation](https://docs.chemaxon.com/display/docs/Public+Repository)).
 * Runtime: Badapple database accessible (PostgreSQL with RDKit cartridge); see below.
@@ -127,14 +127,14 @@ work with other combinations.
 1. Create database: `createdb badapple`
 1. Load from dumpfile: `pg_restore -O -x -v -C -d badapple badapple.pgdump`
 1. Configure user:
-  1. `psql -c "CREATE ROLE myname WITH LOGIN PASSWORD 'foobar'"`
-  1. `psql -c "GRANT SELECT ON ALL TABLES IN SCHEMA public TO myname"`
-  1. `psql -c "GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO myname"`
-  1. `psql -c "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO myname"`
+	* `psql -c "CREATE ROLE myname WITH LOGIN PASSWORD 'foobar'"`
+	* `psql -c "GRANT SELECT ON ALL TABLES IN SCHEMA public TO myname"`
+	* `psql -c "GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO myname"`
+	* `psql -c "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO myname"`
 
 ## Docker
 
 * Docker containers based on Ubuntu 20.04.
-* [`badapple_db`](https://hub.docker.com/repository/docker/unmtransinfo/badapple_db)
-* [`badapple_ui`](https://hub.docker.com/repository/docker/unmtransinfo/badapple_ui)
+	* [`badapple_db`](https://hub.docker.com/repository/docker/unmtransinfo/badapple_db)
+	* [`badapple_ui`](https://hub.docker.com/repository/docker/unmtransinfo/badapple_ui)
 * ChemAxon license must be installed into running `badapple_ui` container.
