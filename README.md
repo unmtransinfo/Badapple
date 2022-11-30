@@ -1,9 +1,10 @@
 # Badapple <img align="right" src="doc/images/BadappleWorm.png" height="80">
 
-Bioassay data associative promiscuity pattern learning engine. 
+Bioassay data associative promiscuity pattern learning engine.
 Badapple web app, utility apps, library, and project code.
 Methods developed at the [UNM Translational Informatics Division](http://datascience.unm.edu)
-for for HTS analytics and hit prioritization.
+for for HTS analytics and hit prioritization. Note that for large input files,
+local installation and the command-line interface is recommended.
 
 * [Public web app](https://datascience.health.unm.edu/tomcat/badapple/badapple)
 * [Badapple: promiscuity patterns from noisy evidence, Yang et al., J. Cheminfo. 8:29 (2016)](http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0137-3).
@@ -11,12 +12,15 @@ for for HTS analytics and hit prioritization.
 
 ## Dependencies
 
-* Java 8
+* Java 8+
 * Maven 3.5+
-* [`unm_biocomp_hscaf.jar`](https://github.com/unmtransinfo/unm_biocomp_hscaf), [`unm_biocomp_depict.jar`](https://github.com/unmtransinfo/unm_biocomp_depict), [`unm_biocomp_util.jar`](https://github.com/unmtransinfo/unm_biocomp_util)
+* Additional libraries (clone and install with `mvn clean install`)
+ * [`unm_biocomp_util.jar`](https://github.com/unmtransinfo/unm_biocomp_util)
+ * [`unm_biocomp_depict.jar`](https://github.com/unmtransinfo/unm_biocomp_depict)
+ * [`unm_biocomp_hscaf.jar`](https://github.com/unmtransinfo/unm_biocomp_hscaf)
 * ChemAxon JChem 19.3.0+
 * Access to [ChemAxon Maven repository](https://hub.chemaxon.com) (see [documentation](https://docs.chemaxon.com/display/docs/Public+Repository)).
-* Runtime: Badapple database accessible (PostgreSQL with RDKit cartridge).
+* Runtime: Badapple database accessible (PostgreSQL with RDKit cartridge); see below.
 
 ## Compiling
 
@@ -24,7 +28,7 @@ for for HTS analytics and hit prioritization.
 mvn clean install
 ```
 
-## Deploying webapp `BADAPPLE_WAR`
+## Deploying webapp via warfile
 
 Ok for Tomcat v8/v9 also. Deploy to server `TomcatServer` as specified
 in Maven `settings.xml`.
@@ -39,7 +43,7 @@ or
 mvn --projects badapple_war tomcat7:redeploy
 ```
 
-## Testing with Jetty
+## Testing webapp with Jetty
 
 <http://localhost:8081/badapple/badapple>
 
@@ -112,11 +116,25 @@ Example:
 java -classpath unm_biocomp_badapple-0.0.1-SNAPSHOT-jar-with-dependencies.jar edu.unm.health.biocomp.badapple.badapple -i data/badapple_test.smi -o badapple_test_out.smiles
 ```
 
+## Database installation
+
+Badapple requires a PostgreSQL database for execution, which can be installed and
+configured locally. This is known to work with Ubuntu 20.04LTS, postgresql-12 and
+postgresql-12-rdkit, or with 22.04LTS, postgresql-14 and postgresql-14-rdkit, but may
+work with other combinations.
+
+1. Download [badapple.pgdump](https://unmtid-dbs.net/download/Badapple/badapple.pgdump)
+1. Create database: `createdb badapple`
+1. Load from dumpfile: `pg_restore -O -x -v -C -d badapple badapple.pgdump`
+1. Configure user:
+  1. `psql -c "CREATE ROLE myname WITH LOGIN PASSWORD 'foobar'"`
+  1. `psql -c "GRANT SELECT ON ALL TABLES IN SCHEMA public TO myname"`
+  1. `psql -c "GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO myname"`
+  1. `psql -c "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO myname"`
+
 ## Docker
 
 * Docker containers based on Ubuntu 20.04.
 * [`badapple_db`](https://hub.docker.com/repository/docker/unmtransinfo/badapple_db)
 * [`badapple_ui`](https://hub.docker.com/repository/docker/unmtransinfo/badapple_ui)
 * ChemAxon license must be installed into running `badapple_ui` container.
-
-
