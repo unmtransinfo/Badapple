@@ -793,6 +793,8 @@ public class badapple_utils
           if (scores.size()>0)
           {
             Collections.sort(scores); //descending score order
+            ScaffoldScore score_max = scores.get(0);
+            //if (score_max==null) System.err.println("DEBUG: score_max==null");
             n_total_scaf+=scores.size();
             String scores_str="";
             String scafids_str="";
@@ -829,10 +831,19 @@ public class badapple_utils
               outmol.setProperty("BADAPPLE_STATUS", "Scores computed (nscaf="+scores.size()+")");
             else
               outmol.setProperty("BADAPPLE_STATUS", "No score, scafs unknown (nscaf="+scores.size()+")");
-            outmol.setProperty("BADAPPLE_PSCORES", scores_str.replaceFirst(",$", "")); //SDF
-            outmol.setProperty("BADAPPLE_SCAFIDS", scafids_str.replaceFirst(",$", "")); //SDF
-            outmol.setProperty("BADAPPLE_SCAFINDRUG", scafindrug_str.replaceFirst(",$", "")); //SDF
-            outmol.setProperty("BADAPPLE_SCAFSMILES", scafsmis_str.replaceFirst(",$", "")); //SDF
+            outmol.setProperty("BADAPPLE_PSCORE_MAX", String.format("%.1f", score_max.getScore()));
+            if (score_max.getScore()==null)
+              outmol.setProperty("BADAPPLE_PSCORE_ADVISORY", "UNKNOWN: no data to indicate promiscuity");
+            else if (score_max.getScore()>=300.0)
+              outmol.setProperty("BADAPPLE_PSCORE_ADVISORY", "HIGH: strong indication of promiscuity");
+            else if (score_max.getScore()>=100.0)
+              outmol.setProperty("BADAPPLE_PSCORE_ADVISORY", "MODERATE: weak indication of promiscuity");
+            else
+              outmol.setProperty("BADAPPLE_PSCORE_ADVISORY", "LOW: no indication of promiscuity");
+            outmol.setProperty("BADAPPLE_PSCORES", scores_str.replaceFirst(",$", ""));
+            outmol.setProperty("BADAPPLE_SCAFIDS", scafids_str.replaceFirst(",$", ""));
+            outmol.setProperty("BADAPPLE_SCAFINDRUG", scafindrug_str.replaceFirst(",$", ""));
+            outmol.setProperty("BADAPPLE_SCAFSMILES", scafsmis_str.replaceFirst(",$", ""));
             if (molWriter.getFormat().toLowerCase().matches("smi")) //SMI
               outmol.setName(molname+"\t"+scafids_str+"\t"+scores_str+"\t"+scafsmis_str);
           }
